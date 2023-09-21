@@ -1,19 +1,34 @@
 from entidade.insumo import Insumo
 from limite.tela_insumo import TelaInsumo
+from limite.tela_cadastro_insumo import TelaCadastroInsumo
 from limite.tela_mensagem import TelaMensagem
 from persistencia.insumo_dao import InsumoDAO
 
 
 class ControladorInsumo:
-    lista_inicial = [None, None, None, None, None, None, None]
+    lista_inicial = [None, None, None]
 
     def __init__(self) -> None:
         self.__tela_insumo = TelaInsumo()
+        self.__tela_cadastro_insumo = TelaCadastroInsumo()
         self.__insumo_dao = InsumoDAO()
         self.__tela_mensagem = TelaMensagem()
 
-    def cadastra_insumo(self):
-        pass
+    def cadastra_insumo(self, valores):
+        if valores == None:
+            self.__tela_cadastro_insumo.close()
+        else:
+            self.__tela_insumo.close()
+            self.__tela_cadastro_insumo.close()
+            nome = valores["it_nome"]
+            unidade = valores["it_unidade"]
+            caloria = int(valores["it_caloria"])
+            if self.busca_insumo_por_nome(nome) == None:
+                self.__insumo_dao.add(Insumo(caloria, None, None, None, 111111, nome, unidade)) # VERIFICAR COMO GERAR ID INSUMO
+                self.__tela_mensagem.open("Insumo cadastrado com sucesso!")
+            else:
+                self.__tela_mensagem.open(
+                    f"Já existe um insumo cadastrado com o nome de {nome}!")
 
     def edita_insumo(self):
         pass
@@ -21,16 +36,16 @@ class ControladorInsumo:
     def exclui_insumo(self):
         pass
 
-    def busca_insumo_por_id(self, id_insumo: int):
+    def busca_insumo_por_nome(self, nome_busca: str):
         for insumo in self.__insumo_dao.get_all():
-            if insumo.id_insumo == id_insumo:
+            if insumo.nome == nome_busca:
                 return insumo
         else:
             return None
 
-    def lista_dados_insumo(self, id_insumo):
+    def lista_dados_insumo(self, nome):
         lista_objeto_insumo = []
-        insumo = self.busca_insumo_por_id(id_insumo)
+        insumo = self.busca_insumo_por_nome(nome)
         lista_objeto_insumo.append(insumo.calorias_por_unidade)
         lista_objeto_insumo.append(insumo.custo_unitario)
         lista_objeto_insumo.append(insumo.estoque_atual)
@@ -58,13 +73,11 @@ class ControladorInsumo:
         while True:
             botao, valores = self.__tela_insumo.open(self.__monta_lista())
             if botao == "Novo Insumo...":
-                informacoes = self.__tela_insumo.open(
-                    self.lista_inicial)
+                informacoes = self.__tela_cadastro_insumo.open(self.lista_inicial)
                 self.cadastra_insumo(informacoes)
             elif botao == "Editar Insumo...":
                 if valores["id_insumo"] == None:
-                    self.__tela_mensagem.open(
-                        "Não foi selecionado nenhuma linha!")
+                    self.__tela_mensagem.open("Não foi selecionado nenhuma linha!")
                 else:
                     informacoes = self.__tela_insumo.open(
                         self.lista_dados_insumo(valores["id_insumo"]))
