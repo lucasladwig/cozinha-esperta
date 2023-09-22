@@ -24,17 +24,32 @@ class ControladorInsumo:
             unidade = valores["it_unidade"]
             caloria = int(valores["it_caloria"])
             if self.busca_insumo_por_nome(nome) == None:
-                self.__insumo_dao.add(Insumo(caloria, None, None, None, 111111, nome, unidade)) # VERIFICAR COMO GERAR ID INSUMO
+                self.__insumo_dao.add(Insumo(caloria, None, None, None, nome, unidade))
                 self.__tela_mensagem.open("Insumo cadastrado com sucesso!")
             else:
                 self.__tela_mensagem.open(
                     f"Já existe um insumo cadastrado com o nome de {nome}!")
 
-    def edita_insumo(self):
-        pass
+    def edita_insumo(self, valores, nome):
+        self.__tela_insumo.close()
+        self.__tela_cadastro_insumo.close()
+        insumo = self.busca_insumo_por_nome(nome)
+        if valores == None:
+            self.__tela_cadastro_insumo.close()
+        else:
+            if valores["it_caloria"] != insumo.calorias_por_unidade:
+                insumo.calorias_por_unidade = valores["it_caloria"]
+            if valores["it_unidade"] != insumo.unidade:
+                insumo.unidade = valores["it_tipo"]
+            if valores["it_nome"] != insumo.nome:
+                if self.busca_insumo_por_nome(valores["it_nome"]) == None:
+                    insumo.nome = valores["it_nome"]
+                else:
+                    self.__tela_mensagem.open(
+                        f"Já existe um insumo cadastrado com o nome de {valores['it_numero']}")
 
-    def exclui_insumo(self):
-        pass
+    def exclui_insumo(self, nome):
+        self.__insumo_dao.remove(nome)
 
     def busca_insumo_por_nome(self, nome_busca: str):
         for insumo in self.__insumo_dao.get_all():
@@ -46,26 +61,18 @@ class ControladorInsumo:
     def lista_dados_insumo(self, nome):
         lista_objeto_insumo = []
         insumo = self.busca_insumo_por_nome(nome)
-        lista_objeto_insumo.append(insumo.calorias_por_unidade)
-        lista_objeto_insumo.append(insumo.custo_unitario)
-        lista_objeto_insumo.append(insumo.estoque_atual)
-        lista_objeto_insumo.append(insumo.estoque_minimo)
-        lista_objeto_insumo.append(insumo.id_insumo)
         lista_objeto_insumo.append(insumo.nome)
         lista_objeto_insumo.append(insumo.unidade)
+        lista_objeto_insumo.append(insumo.calorias_por_unidade)
         return lista_objeto_insumo
 
     def __monta_lista(self):
         lista_insumo = []
         for values in self.__insumo_dao.get_all():
             lista_auxiliar = []
-            lista_auxiliar.append(values.calorias_por_unidade)
-            lista_auxiliar.append(values.custo_unitario)
-            lista_auxiliar.append(values.estoque_atual)
-            lista_auxiliar.append(values.estoque_minimo)
-            lista_auxiliar.append(values.id_insumo)
             lista_auxiliar.append(values.nome)
             lista_auxiliar.append(values.unidade)
+            lista_auxiliar.append(values.calorias_por_unidade)
             lista_insumo.append(lista_auxiliar)
         return lista_insumo
 
@@ -76,18 +83,18 @@ class ControladorInsumo:
                 informacoes = self.__tela_cadastro_insumo.open(self.lista_inicial)
                 self.cadastra_insumo(informacoes)
             elif botao == "Editar Insumo...":
-                if valores["id_insumo"] == None:
+                if valores["nome"] == None:
                     self.__tela_mensagem.open("Não foi selecionado nenhuma linha!")
                 else:
-                    informacoes = self.__tela_insumo.open(
-                        self.lista_dados_insumo(valores["id_insumo"]))
-                    self.edita_insumo(informacoes, valores["id_insumo"])
+                    informacoes = self.__tela_cadastro_insumo.open(
+                        self.lista_dados_insumo(valores["nome"]))
+                    self.edita_insumo(informacoes, valores["nome"])
             elif botao == "Excluir Insumo...":
-                if valores["id_insumo"] == None:
+                if valores["nome"] == None:
                     self.__tela_mensagem.open(
                         "Não foi selecionado nenhuma linha!")
                 else:
-                    self.exclui_insumo(valores["id_insumo"])
+                    self.exclui_insumo(valores["nome"])
             elif botao == "Voltar":
                 self.__tela_insumo.close()
                 # self.voltar()

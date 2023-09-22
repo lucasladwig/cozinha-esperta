@@ -7,8 +7,7 @@ class TelaInsumo:
         self.init_components()
 
     def init_components(self, lista=[]):
-        layout = [[sg.Text("Insumos")],
-                  [sg.Table(values=lista, headings=["calorias_por_unidade", "custo_unitario", "estoque_atual", "estoque_minimo", "id_insumo", "nome", "unidade"], auto_size_columns=True,
+        layout = [[sg.Table(values=lista, headings=["nome", "unidade", "calorias por unidade"], auto_size_columns=True,
                             expand_x=True, expand_y=True, key="tab_objeto", justification="left", select_mode="browse")],
                   [sg.Button("Excluir Insumo..."), sg.Button("Editar Insumo..."), sg.Button("Novo Insumo...")],
                   [sg.Button("Voltar")]]
@@ -20,10 +19,10 @@ class TelaInsumo:
         botao, valores = self.__window.read()
         linha = valores["tab_objeto"]
         try:
-            valores["id_insumo"] = self.__window.find_element("tab_objeto").get()[
-                linha[0]][4]
+            valores["nome"] = self.__window.find_element("tab_objeto").get()[
+                linha[0]][0]
         except:
-            valores["id_insumo"] = None
+            valores["nome"] = None
         return botao, valores
 
     def close(self):

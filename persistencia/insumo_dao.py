@@ -7,13 +7,13 @@ class InsumoDAO(DAO):
         super().__init__('insumo.pkl')
 
     def add(self, insumo: Insumo):
-        if isinstance(insumo, Insumo) and isinstance(insumo.id_insumo, int):
-            super().add(insumo.id_insumo, insumo)
+        if isinstance(insumo, Insumo) and isinstance(insumo.nome, str):
+            super().add(insumo.nome, insumo)
 
     def get(self, key: int):
         if isinstance(key, int):
             return super().get(key)
 
-    def remove(self, key: int):
-        if isinstance(key, int):
+    def remove(self, key: str):
+        if isinstance(key, str):
             return super().remove(key)
