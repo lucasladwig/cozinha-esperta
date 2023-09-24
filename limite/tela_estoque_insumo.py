@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 
 
-class TelaInsumo:
+class TelaEstoqueInsumo:
     def __init__(self):
         self.__window = None
         self.init_components()
@@ -15,7 +15,8 @@ class TelaInsumo:
         self.init_components(lista)
         botao, valores = self.__window.read()
         linha = valores["tab_objeto"]
-        print(linha)
+        if botao == sg.WINDOW_CLOSED:
+            return 'Voltar', None
         try:
             valores["nome"] = self.__window.find_element("tab_objeto").get()[
                 linha[0]][0]

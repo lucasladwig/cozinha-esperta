@@ -1,3 +1,4 @@
+import time
 from entidade.insumo import Insumo
 from persistencia.insumo_dao import InsumoDAO
 from limite.tela_estoque_insumo import TelaEstoqueInsumo
@@ -20,11 +21,29 @@ class ControladorEstoqueInsumo:
             self.__tela_atualiza_estoque_insumo.close()
         else:
             if valores["it_custo_unitario"] != insumo.custo_unitario:
-                insumo.custo_unitario = valores["it_custo_unitario"]
+                try:
+                    custo_unitario = float(valores["it_custo_unitario"])
+                    insumo.custo_unitario = custo_unitario
+                except (ValueError, TypeError):
+                    self.__tela_mensagem.open("Caractere Invalido!")
+                    return
+
             if valores["it_estoque_atual"] != insumo.estoque_atual:
-                insumo.estoque_atual = valores["it_estoque_atual"]
-            if valores["it_estoque_atual"] != insumo.estoque_minimo:
-                insumo.estoque_minimo = valores["it_estoque_minimo"]
+                try:
+                    estoque_atual = float(valores["it_estoque_atual"])
+                    insumo.estoque_atual = estoque_atual
+                except (ValueError, TypeError):
+                    self.__tela_mensagem.open("Caractere Invalido!")
+                    return
+
+            if valores["it_estoque_minimo"] != insumo.estoque_minimo:
+                try:
+                    estoque_minimo = float(valores["it_estoque_minimo"])
+                    insumo.estoque_minimo = estoque_minimo
+                except (ValueError, TypeError):
+                    self.__tela_mensagem.open("Caractere Invalido!")
+                    return
+            self.__insumo_dao.add(insumo=insumo)
 
     def busca_insumo_por_nome(self, nome_busca: str):
         for insumo in self.__insumo_dao.get_all():
@@ -36,10 +55,11 @@ class ControladorEstoqueInsumo:
     def lista_dados_insumo(self, nome):
         lista_objeto_insumo = []
         insumo = self.busca_insumo_por_nome(nome)
-        lista_objeto_insumo.append(insumo.nome)
+        lista_objeto_insumo.append(insumo.nome.upper())
         lista_objeto_insumo.append(insumo.custo_unitario)
         lista_objeto_insumo.append(insumo.estoque_atual)
         lista_objeto_insumo.append(insumo.estoque_minimo)
+        lista_objeto_insumo.append(insumo.unidade)
         return lista_objeto_insumo
 
     def __monta_lista(self):
@@ -50,6 +70,7 @@ class ControladorEstoqueInsumo:
             lista_auxiliar.append(values.custo_unitario)
             lista_auxiliar.append(values.estoque_atual)
             lista_auxiliar.append(values.estoque_minimo)
+            lista_auxiliar.append(values.unidade)
             lista_insumo.append(lista_auxiliar)
         return lista_insumo
 
@@ -62,16 +83,18 @@ class ControladorEstoqueInsumo:
                     self.__tela_mensagem.open(
                         "Não foi selecionado nenhuma linha!")
                 else:
+                    self.__tela_estoque_insumo.close()
                     informacoes = self.__tela_atualiza_estoque_insumo.open(
                         self.lista_dados_insumo(valores["nome"]))
                     self.edita_insumo(informacoes, valores["nome"])
 
             elif botao == "Voltar":
                 self.__tela_estoque_insumo.close()
-                # self.voltar()
-            self.__tela_estoque_insumo.close()
-            self.__tela_estoque_insumo.init_components()
+                break
 
-            # novo insumo
-            # edita insumo
-            # excluir insumo
+                # self.voltar()
+        self.__tela_estoque_insumo.close()
+        self.__tela_estoque_insumo.init_components()
+        # novo insumo
+        # edita insumo
+        # excluir insumo
