@@ -12,7 +12,7 @@ class Tela(ABC):
 
         # Tema padrão
         sg.theme("DarkGrey9")
-        sg.set_options(font=("Tahoma", 16))
+        sg.set_options(font=("Tahoma", 14))
 
     # CAPTURAR ENTRADAS DO USUARIO
 

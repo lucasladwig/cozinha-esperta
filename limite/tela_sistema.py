@@ -22,42 +22,51 @@ class TelaSistema(Tela):
 
     # ABRIR/FECHAR
     def abrir_tela(self):
-        event, values = self.__window.read()
-        return event, values
+        botao, valores = self.__window.read()
+        return botao, valores
 
     # NAVEGAÇÃO
-    def tela_opcoes(self):
+    def escolher_modulo(self):
         self.inicializar_janela()
-        event, values = self.__window.read()
-        opcao = 0
+        while True:
+            event, values = self.__window.read()
+            print("event:", event, "values:", values)
+            if event == sg.WIN_CLOSED:
+                break
+            if '+CLICKED+' in event:
+                print(f"You clicked row: {event[2][0]} Column: {event[2][1]}")
+        self.__window.close()
 
-        # escolha de módulo
-        if values['1']:
-            opcao = 1
-        if values['2']:
-            opcao = 2
-        if values['3']:
-            opcao = 3
-
-        # voltar ou encerrar
-        if event in (None, 'Encerrar Sistema'):
-            opcao = 0
-
-        self.fechar_tela()
-        return opcao
+        # botao, valores = self.__window.read()
+        # modulo = valores["-MODULOS-"]
+        # try:
+        #     valores["Módulo"] = self.__window.find_element("-MODULOS-").get()[
+        #         modulo[0]][0]
+        # except:
+        #     valores["nome"] = None
+        
+        # return botao, valores
 
     def inicializar_janela(self):
-        layout = [[sg.Table(values=self.modulos, 
-                            headings=["Módulo", "Descrição"], 
-                            auto_size_columns=True,
-                            expand_x=True, 
-                            expand_y=True, 
-                            key="-MODULOS-", 
-                            justification="left", 
-                            select_mode="browse", 
-                            enable_events=True)],
-                  [sg.Button("Excluir Insumo..."), sg.Button(
-                      "Editar Insumo..."), sg.Button("Novo Insumo...")],
-                  [sg.Button("Voltar")]]
+        frame_modulos = [[sg.Table(values=self.modulos,
+                                   headings=["Módulo", "Descrição"],
+                                   num_rows=len(self.modulos),
+                                   max_col_width=55,
+                                   auto_size_columns=True,
+                                   expand_x=True,
+                                   key="-MODULOS-",
+                                   justification="left",
+                                   hide_vertical_scroll=True,
+                                   enable_events=True,
+                                   select_mode="browse")],
+                         [sg.Push(), sg.Button("Abrir Módulo")]]
 
-        self.__window = sg.Window('Cozinha Esperta v1.0').layout(layout)
+        layout = [
+            [sg.Text(
+                "Seja bem-vindo ao Cozinha Esperta! Escolha o módulo desejado no menu abaixo:")],
+            [sg.Frame("Módulos:", frame_modulos, expand_x=True)],
+            [sg.Push(), sg.Button("Encerrar", pad=((0, 5), (20, 10)))]
+        ]
+
+        self.__window = sg.Window(
+            "Cozinha Esperta v1.0", layout, resizable=True)

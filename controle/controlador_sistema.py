@@ -34,7 +34,7 @@ class ControladorSistema(Controlador):
                     0: self.retornar }
 
         while True:
-            modulos[self.tela.tela_opcoes()]()
+            modulos[self.tela.escolher_modulo()]()
 
     def inicializar_sistema(self):
         self.abrir_tela()
