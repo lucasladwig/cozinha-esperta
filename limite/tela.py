@@ -3,29 +3,25 @@ import PySimpleGUI as sg
 
 
 class Tela(ABC):
-
+    # TEMA PADRÃO
+    sg.theme("DarkGrey9")
+    sg.set_options(font=("Tahoma", 14))
+    
     # INICIALIZAÇÃO
     @abstractmethod
     def __init__(self):
         self.__window = None
-        self.inicializar_janela()
-
-        # Tema padrão
-        sg.theme("DarkGrey9")
-        sg.set_options(font=("Tahoma", 14))
+        self.inicializar_tela()
 
     # LAYOUT TELA
     @abstractmethod
-    def inicializar_janela(self):
+    def definir_layout(self):
         pass
 
     # NAVEGAÇÃO
     @abstractmethod
-    def abrir_tela(self):
+    def inicializar_tela(self):
         pass
-
-    def fechar_tela(self):
-        self.__window.close()
 
     # MOSTRAR MENSAGENS
     def mostrar_mensagem(self, mensagem, titulo=""):

@@ -1,4 +1,4 @@
-from controle.controlador_sistema import ControladorSistema
+from controle.controlador_custos_fixos import ControladorCustosFixos
 
 if __name__ == "__main__":
-    ControladorSistema().inicializar_sistema()
+    ControladorCustosFixos().abrir_tela()

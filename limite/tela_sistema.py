@@ -19,36 +19,44 @@ class TelaSistema(Tela):
     def __init__(self):
         super().__init__()
 
-    def abrir_tela(self):
-        self.inicializar_janela()
+    def inicializar_tela(self):
+        self.definir_layout()
         botao, valores = self.__window.read()
         opcao = "Voltar"
 
-        if botao == "Abrir Módulo":
-            match valores["-MODULOS-"]:
-                case [0]:
-                    opcao = "Insumos"
-                case [1]:
-                    opcao = "Estoque"
-                case [2]:
-                    opcao = "Receitas"
-                case [3]:
-                    opcao = "Producoes"
-                case [4]:
-                    opcao = "Lista de Compras"
-                case [5]:
-                    opcao = "Relatorios de Custos"
-                case [6]:
-                    opcao = "Custos Fixos"
-                case [7]:
-                    opcao = "Etiquetagem"
-        elif botao in ("Encerrar", None):
+        match valores["-MODULOS-"]:
+            case [0]:
+                opcao = "Insumos"
+                print("Insumos")
+            case [1]:
+                opcao = "Estoque"
+                print("Estoque")
+            case [2]:
+                opcao = "Receitas"
+                print("Receitas")
+            case [3]:
+                opcao = "Producoes"
+                print("Producoes")
+            case [4]:
+                opcao = "Lista de Compras"
+                print("Lista de compras")
+            case [5]:
+                opcao = "Relatorios de Custos"
+                print("Relatorios de custos")
+            case [6]:
+                opcao = "Custos Fixos"
+                print("Custos fixos")
+            case [7]:
+                opcao = "Etiquetagem"
+                print("Etiquetas")
+        
+        if botao == "Encerrar":
             opcao = "Voltar"
 
-        self.fechar_tela()
+        self.__window.close()
         return opcao
 
-    def inicializar_janela(self):
+    def definir_layout(self):
         frame_modulos = [[sg.Table(values=self.modulos,
                                    headings=["Módulo", "Descrição"],
                                    num_rows=len(self.modulos),
@@ -58,7 +66,6 @@ class TelaSistema(Tela):
                                    key="-MODULOS-",
                                    justification="left",
                                    hide_vertical_scroll=True,
-                                   enable_events=True,
                                    select_mode="browse")],
                          [sg.Push(), sg.Button("Abrir Módulo")]]
 

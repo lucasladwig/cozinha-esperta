@@ -1,90 +1,97 @@
 class CustosFixos:
-    """Classe que guarda os itens de custo fixo da cozinha. Só haverá uma instância desta classe no controlador."""
+    """Classe que guarda os custos fixos da cozinha."""
 
     # Garante que só haja uma instância da classe
-    __instancia = None
-    def __new__(cls):
-        if cls.__instancia is None:
-            cls.__instancia = super(CustosFixos, cls).__new__(cls)
-        return cls.__instancia
+    # __instancia = None
+    # def __new__(cls):
+    #     if cls.__instancia is None:
+    #         cls.__instancia = super(CustosFixos, cls).__new__(cls)
+    #     return cls.__instancia
     
     # ATRIBUTOS
-    def __init__(self) -> None:
-        self.__custo_agua = 0.0
-        self.__custo_aluguel = 0.0
-        self.__custo_eletricidade = 0.0
-        self.__custo_gas = 0.0
-        self.__custo_manutencao = 0.0
-        self.__custo_outros = 0.0
-        self.__porcoes_produzidas_mes = 1
-        self.__custo_fixo_total = sum(self.__custo_agua,
-                                      self.__custo_aluguel,
-                                      self.__custo_eletricidade,
-                                      self.__custo_gas,
-                                      self.__custo_manutencao,
-                                      self.__custo_outros)
+    def __init__(self, 
+                 agua: float, 
+                 aluguel: float, 
+                 eletricidade: float, 
+                 gas: float, 
+                 manuntencao: float, 
+                 outros: float, 
+                 porcoes_produzidas_mes: int) -> None:
+        self.__agua = agua
+        self.__aluguel = aluguel
+        self.__eletricidade = eletricidade
+        self.__gas = gas
+        self.__manutencao = manuntencao
+        self.__outros = outros
+        self.__porcoes_produzidas_mes = porcoes_produzidas_mes
+        self.__custo_fixo_total = sum([self.__agua,
+                                      self.__aluguel,
+                                      self.__eletricidade,
+                                      self.__gas,
+                                      self.__manutencao,
+                                      self.__outros])
         self.__custo_fixo_por_porcao = (self.__custo_fixo_total /
                                         self.__porcoes_produzidas_mes)
 
     # GETTERS / SETTERS
     @property
-    def custo_agua(self) -> float:
-        return self.__custo_agua
+    def agua(self) -> float:
+        return self.__agua
 
-    @custo_agua.setter
-    def custo_agua(self, custo_agua) -> None:
-        if isinstance(custo_agua, float) and custo_agua >= 0.0:
-            self.__custo_agua = custo_agua
+    @agua.setter
+    def agua(self, agua) -> None:
+        if isinstance(agua, float) and agua >= 0.0:
+            self.__agua = agua
             self.__atualizar_custos()
 
     @property
-    def custo_aluguel(self) -> float:
-        return self.__custo_aluguel
+    def aluguel(self) -> float:
+        return self.__aluguel
 
-    @custo_aluguel.setter
-    def custo_aluguel(self, custo_aluguel) -> None:
-        if isinstance(custo_aluguel, float) and custo_aluguel >= 0.0:
-            self.__custo_aluguel = custo_aluguel
+    @aluguel.setter
+    def aluguel(self, aluguel) -> None:
+        if isinstance(aluguel, float) and aluguel >= 0.0:
+            self.__aluguel = aluguel
             self.__atualizar_custos()
 
     @property
-    def custo_eletricidade(self) -> float:
-        return self.__custo_eletricidade
+    def eletricidade(self) -> float:
+        return self.__eletricidade
 
-    @custo_eletricidade.setter
-    def custo_eletricidade(self, custo_eletricidade) -> None:
-        if isinstance(custo_eletricidade, float) and custo_eletricidade >= 0.0:
-            self.__custo_eletricidade = custo_eletricidade
+    @eletricidade.setter
+    def eletricidade(self, eletricidade) -> None:
+        if isinstance(eletricidade, float) and eletricidade >= 0.0:
+            self.__eletricidade = eletricidade
             self.__atualizar_custos()
 
     @property
-    def custo_gas(self) -> float:
-        return self.__custo_gas
+    def gas(self) -> float:
+        return self.__gas
 
-    @custo_gas.setter
-    def custo_gas(self, custo_gas) -> None:
-        if isinstance(custo_gas, float) and custo_gas >= 0.0:
-            self.__custo_gas = custo_gas
+    @gas.setter
+    def gas(self, gas) -> None:
+        if isinstance(gas, float) and gas >= 0.0:
+            self.__gas = gas
             self.__atualizar_custos()
 
     @property
-    def custo_manutencao(self) -> float:
-        return self.__custo_manutencao
+    def manutencao(self) -> float:
+        return self.__manutencao
 
-    @custo_manutencao.setter
-    def custo_manutencao(self, custo_manutencao) -> None:
-        if isinstance(custo_manutencao, float) and custo_manutencao >= 0.0:
-            self.__custo_manutencao = custo_manutencao
+    @manutencao.setter
+    def manutencao(self, manutencao) -> None:
+        if isinstance(manutencao, float) and manutencao >= 0.0:
+            self.__manutencao = manutencao
             self.__atualizar_custos()
 
     @property
-    def custo_outros(self) -> float:
-        return self.__custo_outros
+    def outros(self) -> float:
+        return self.__outros
 
-    @custo_outros.setter
-    def custo_outros(self, custo_outros) -> None:
-        if isinstance(custo_outros, float) and custo_outros >= 0.0:
-            self.__custo_outros = custo_outros
+    @outros.setter
+    def outros(self, outros) -> None:
+        if isinstance(outros, float) and outros >= 0.0:
+            self.__outros = outros
             self.__atualizar_custos()
 
     @property
@@ -118,11 +125,11 @@ class CustosFixos:
     # MÉTODOS AUXILIARES
     def __atualizar_custos(self) -> None:
         """Método utilizado para garantir que o valor total dos custos fixos seja atualizado quando qualquer outro item de custo (água, gás, etc.) é alterado."""
-        self.custo_fixo_total = sum(self.__custo_agua,
-                                    self.__custo_aluguel,
-                                    self.__custo_eletricidade,
-                                    self.__custo_gas,
-                                    self.__custo_manutencao,
-                                    self.__custo_outros)
+        self.custo_fixo_total = sum([self.__agua,
+                                    self.__aluguel,
+                                    self.__eletricidade,
+                                    self.__gas,
+                                    self.__manutencao,
+                                    self.__outros])
         self.custo_fixo_por_porcao = (self.__custo_fixo_total /
                                       self.__porcoes_produzidas_mes)

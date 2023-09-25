@@ -1,7 +1,7 @@
 from controle.controlador import Controlador
 # from controle.controlador_insumo import ControladorInsumo
 # from controle.controlador_estoque_insumo import ControladorEstoqueInsumo
-# from controle.controlador_custos_fixos import ControladorCustosFixos
+from controle.controlador_custos_fixos import ControladorCustosFixos
 from limite.tela_sistema import TelaSistema
 
 
@@ -9,14 +9,14 @@ class ControladorSistema(Controlador):
     """Controlador do sistema, gerencia o acesso a todos os módulos do sistema."""
 
     def __init__(self) -> None:
-        super().__init__(TelaSistema(), None)
+        super().__init__(tela=TelaSistema(), controlador_sistema=None)
         # self.__controlador_insumo = ControladorInsumo()
         # self.__controlador_estoque_insumo = ControladorEstoqueInsumo()
         # self.__controlador_receitas = ControladorReceitas()
         # self.__controlador_producoes = ControladorProducoes()
         # self.__controlador_lista_compras = ControladorListaCompras()
         # self.__controlador_relatorios_custos = ControladorRelatoriosCustos()
-        # self.__controlador_custos_fixos = ControladorCustosFixos()
+        self.__controlador_custos_fixos = ControladorCustosFixos(self)
         # self.__controlador_etiquetas = ControladorEtiquetas()
 
     # @property
@@ -43,9 +43,9 @@ class ControladorSistema(Controlador):
     # def controlador_relatorios_custos(self):
     #    return self.__controlador_relatorios_custos
 
-    # @property
-    # def controlador_custos_fixos(self):
-    #    return self.__controlador_custos_fixos
+    @property
+    def controlador_custos_fixos(self):
+        return self.__controlador_custos_fixos
 
     # @property
     # def controlador_etiquetas(self):
@@ -53,19 +53,19 @@ class ControladorSistema(Controlador):
 
     def abrir_tela(self):
         modulos = {
-            # "Insumos": self.controlador_insumos.abrir_tela,
-            # "Estoque": self.controlador_estoque_insumo.abrir_tela,
-            # "Receitas": self.controlador_receitas.abrir_tela,
-            # "Producoes": self.controlador_producoes.abrir_tela,
-            # "Lista de Compras": self.controlador_lista_compras.abrir_tela,
-            # "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
-            # "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
-            # "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
+            "Insumos": self.controlador_insumos.abrir_tela,
+            "Estoque": self.controlador_estoque_insumo.abrir_tela,
+            "Receitas": self.controlador_receitas.abrir_tela,
+            "Producoes": self.controlador_producoes.abrir_tela,
+            "Lista de Compras": self.controlador_lista_compras.abrir_tela,
+            "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
+            "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
+            "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
             "Voltar": self.voltar
         }
 
         while True:
-            modulos[self.tela.abrir_tela()]()
+            modulos[self.tela.inicializar_tela()]()
 
     def inicializar_sistema(self):
         self.abrir_tela()
