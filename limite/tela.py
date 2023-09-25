@@ -14,9 +14,6 @@ class Tela(ABC):
         sg.theme("DarkGrey9")
         sg.set_options(font=("Tahoma", 14))
 
-    # CAPTURA ENTRADAS DO USUARIO
-
-
     # LAYOUT TELA
     @abstractmethod
     def inicializar_janela(self):
@@ -28,7 +25,7 @@ class Tela(ABC):
         pass
 
     def fechar_tela(self):
-        self.__window.Close()
+        self.__window.close()
 
     # MOSTRAR MENSAGENS
     def mostrar_mensagem(self, mensagem, titulo=""):
