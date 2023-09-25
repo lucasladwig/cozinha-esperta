@@ -22,5 +22,5 @@ class Controlador(ABC):
         pass
 
     @abstractmethod
-    def retornar(self):
+    def voltar(self):
         pass

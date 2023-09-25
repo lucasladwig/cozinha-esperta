@@ -5,13 +5,12 @@ import PySimpleGUI as sg
 class TelaSistema(Tela):
     """Tela inicial do sistema."""
 
-    # Nomes e descrições dos módulos
     modulos = [
         ["Insumos", "Gerencie os tipos de insumos com os quais sua cozinha trabalha.", ],
         ["Estoque", "Gerencie estoque e custos dos seus insumos.", ],
         ["Receitas", "Gerencie suas receitas e fichas técnicas.", ],
         ["Produções", "Planeje suas produções.", ],
-        ["Listas de Compras", "Gere uma lista de compras com base em uma produção.", ],
+        ["Lista de Compras", "Gere uma lista de compras com base em uma produção.", ],
         ["Relatórios de Custos", "Veja um relatório de custos de um período.", ],
         ["Custos Fixos", "Insira os custos fixos da sua cozinha para calcular de custos de seus pratos.", ],
         ["Etiquetagem", "Gere um arquivo de texto com as informações essenciais para uma etiqueta.", ],
@@ -20,32 +19,34 @@ class TelaSistema(Tela):
     def __init__(self):
         super().__init__()
 
-    # ABRIR/FECHAR
     def abrir_tela(self):
-        botao, valores = self.__window.read()
-        return botao, valores
-
-    # NAVEGAÇÃO
-    def escolher_modulo(self):
         self.inicializar_janela()
-        while True:
-            event, values = self.__window.read()
-            print("event:", event, "values:", values)
-            if event == sg.WIN_CLOSED:
-                break
-            if '+CLICKED+' in event:
-                print(f"You clicked row: {event[2][0]} Column: {event[2][1]}")
-        self.__window.close()
+        botao, valores = self.__window.read()
+        opcao = "Voltar"
 
-        # botao, valores = self.__window.read()
-        # modulo = valores["-MODULOS-"]
-        # try:
-        #     valores["Módulo"] = self.__window.find_element("-MODULOS-").get()[
-        #         modulo[0]][0]
-        # except:
-        #     valores["nome"] = None
-        
-        # return botao, valores
+        if botao == "Abrir Módulo":
+            match valores["-MODULOS-"]:
+                case [0]:
+                    opcao = "Insumos"
+                case [1]:
+                    opcao = "Estoque"
+                case [2]:
+                    opcao = "Receitas"
+                case [3]:
+                    opcao = "Producoes"
+                case [4]:
+                    opcao = "Lista de Compras"
+                case [5]:
+                    opcao = "Relatorios de Custos"
+                case [6]:
+                    opcao = "Custos Fixos"
+                case [7]:
+                    opcao = "Etiquetagem"
+        elif botao in ("Encerrar", None):
+            opcao = "Voltar"
+
+        self.fechar_tela()
+        return opcao
 
     def inicializar_janela(self):
         frame_modulos = [[sg.Table(values=self.modulos,
