@@ -14,9 +14,6 @@ class Tela(ABC):
         sg.theme("DarkGrey9")
         sg.set_options(font=("Tahoma", 14))
 
-    # CAPTURAR ENTRADAS DO USUARIO
-
-
     # LAYOUT TELA
     @abstractmethod
     def inicializar_janela(self):
