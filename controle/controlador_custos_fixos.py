@@ -46,6 +46,7 @@ class ControladorCustosFixos():
                 self.tela.close()
                 # self.tela.init_components()
             except ValueError:
+                self.tela.close()
                 self.tela.mostrar_mensagem("Por favor, insira valores numéricos para os custos!",
                                            titulo="Erro ao atualizar custos")
 
