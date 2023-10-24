@@ -1,4 +1,4 @@
-from insumo_teste import Insumo
+from entidade.insumo_teste import Insumo
 
 
 class ItemDeListaDeCompras:

@@ -76,9 +76,9 @@ class Insumo():
     #######################################################
     def lista_insumos():
         lista = []
-        lista.append(Insumo(12, 33, 10, 50, "Milho", "g"), 
-                    Insumo(55, 10, 0, 15, "Tomate", "g"), 
-                    Insumo(2, 34, 10, 50, "Maça", "g"), 
-                    Insumo(76, 65, 70, 20, "Queijo", "g"), 
-                    Insumo(15, 77, 30, 60, "Cebola", "g"))
+        lista.append(Insumo(12, 33.2, 10.1, 50.0, "Milho", "g"))
+        lista.append(Insumo(55, 10.0, 0.0, 15.0, "Tomate", "g"))
+        lista.append(Insumo(2, 34.0, 10.0, 50.0, "Maça", "g"))
+        lista.append(Insumo(76, 65.4, 70.5, 20.9, "Queijo", "g"))
+        lista.append(Insumo(15, 77.1, 30.0, 60.0, "Cebola", "g"))
         return lista
