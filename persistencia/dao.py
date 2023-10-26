@@ -40,3 +40,4 @@ class DAO(ABC):
     @property
     def cache(self) -> dict:
         return self.__cache
+    
