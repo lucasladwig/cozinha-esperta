@@ -1,6 +1,6 @@
 from controle.controlador import Controlador
-# from controle.controlador_insumo import ControladorInsumo
-# from controle.controlador_estoque_insumo import ControladorEstoqueInsumo
+from controle.controlador_insumo import ControladorInsumo
+from controle.controlador_estoque_insumo import ControladorEstoqueInsumo
 from controle.controlador_custos_fixos import ControladorCustosFixos
 from limite.tela_sistema import TelaSistema
 
@@ -10,8 +10,8 @@ class ControladorSistema(Controlador):
 
     def __init__(self) -> None:
         super().__init__(tela=TelaSistema(), controlador_sistema=None)
-        # self.__controlador_insumo = ControladorInsumo()
-        # self.__controlador_estoque_insumo = ControladorEstoqueInsumo()
+        self.__controlador_insumo = ControladorInsumo()
+        self.__controlador_estoque_insumo = ControladorEstoqueInsumo()
         # self.__controlador_receitas = ControladorReceitas()
         # self.__controlador_producoes = ControladorProducoes()
         # self.__controlador_lista_compras = ControladorListaCompras()
@@ -19,13 +19,13 @@ class ControladorSistema(Controlador):
         self.__controlador_custos_fixos = ControladorCustosFixos(self)
         # self.__controlador_etiquetas = ControladorEtiquetas()
 
-    # @property
-    # def controlador_insumo(self):
-    #    return self.__controlador_insumo
+    @property
+    def controlador_insumo(self):
+        return self.__controlador_insumo
 
-    # @property
-    # def controlador_estoque_insumo(self):
-    #    return self.__controlador_estoque_insumo
+    @property
+    def controlador_estoque_insumo(self):
+        return self.__controlador_estoque_insumo
 
     # @property
     # def controlador_receitas(self):
