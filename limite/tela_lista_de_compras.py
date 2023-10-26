@@ -9,7 +9,8 @@ class TelaListaDeCompras:
     def init_components(self, lista=[]):
         layout = [[sg.Table(values=lista, headings=["nome", "quantidade a comprar"], auto_size_columns=True,
                             expand_x=True, expand_y=True, key="tab_objeto", justification="left", select_mode="browse")],
-                  [sg.Button("Excluir Item da Lista..."), sg.Button("Editar Item..."), sg.Button("Adicionar Item...")],
+                  [sg.Button("Excluir Item da Lista..."), sg.Button(
+                      "Editar Item..."), sg.Button("Adicionar Item...")],
                   [sg.Button("Voltar")]]
 
         self.__window = sg.Window("Lista De Compras").layout(layout)
