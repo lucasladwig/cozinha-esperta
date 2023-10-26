@@ -36,3 +36,8 @@ class DAO(ABC):
 
     def get_all(self):
         return self.__cache.values()
+    
+    @property
+    def cache(self) -> dict:
+        return self.__cache
+    
