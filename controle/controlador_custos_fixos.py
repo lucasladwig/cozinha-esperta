@@ -33,7 +33,8 @@ class ControladorCustosFixos():
     def abrir_tela(self) -> None:
         while True:
             try:
-                custos_atuais = self.dao.get_last()
+                # custos_atuais = self.dao.get_last()
+                custos_atuais = self.dao.get()
                 botao, novos_custos = self.tela.open(custos_atuais)
                 if botao == "Atualizar e Salvar":
                     custos_atualizados = self.atualizar_custos_fixos(novos_custos)
@@ -55,7 +56,8 @@ class ControladorCustosFixos():
         if novos_custos is None:
             raise ValueError
 
-        custos_atual = self.dao.get_last()
+        # custos_atual = self.dao.get_last()
+        custos_atual = self.dao.get()
 
         custos_atual.agua = novos_custos["agua"]
         custos_atual.aluguel = novos_custos["aluguel"]
