@@ -125,11 +125,11 @@ class CustosFixos:
     # MÉTODOS AUXILIARES
     def __atualizar_custos(self) -> None:
         """Método utilizado para garantir que o valor total dos custos fixos seja atualizado quando qualquer outro item de custo (água, gás, etc.) é alterado."""
-        self.custo_fixo_total = sum([self.__agua,
+        self.__custo_fixo_total = sum([self.__agua,
                                     self.__aluguel,
                                     self.__eletricidade,
                                     self.__gas,
                                     self.__manutencao,
                                     self.__outros])
-        self.custo_fixo_por_porcao = (self.__custo_fixo_total /
+        self.__custo_fixo_por_porcao = (self.__custo_fixo_total /
                                       self.__porcoes_produzidas_mes)
