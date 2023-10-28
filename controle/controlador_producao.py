@@ -1,6 +1,5 @@
 import time
-from entidade.producao import Producao
-from persistencia.producao import ProducaoDAO
+from persistencia.producao_dao import ProducaoDAO
 from limite.tela_producao import TelaProducao
 # from limite.tela_edita_estoque_insumo import TelaAtualizaEstoqueInsumo
 from limite.tela_mensagem import TelaMensagem
