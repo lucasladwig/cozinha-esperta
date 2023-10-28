@@ -1,4 +1,5 @@
 from entidade.item_de_receita import ItemDeReceita
+from entidade.insumo import Insumo
 
 
 class Receita():
@@ -12,7 +13,6 @@ class Receita():
                  rendimento_porcoes: int,
                  tempo_preparo: int,
                  validade: int,
-                 # ingredientes: list,
                  modo_preparo: str,
                  calorias_porcao: int,
                  custo_total: float,
@@ -23,8 +23,8 @@ class Receita():
         self.__rendimento_porcoes = rendimento_porcoes  # Atualizar no diagrama de classes
         self.__tempo_preparo = tempo_preparo  # Atualizar no diagrama de classes
         self.__validade = validade
-        self.__ingredientes = []
         self.__modo_preparo = modo_preparo  # Atualizar no diagrama de classes
+        self.__itens = []
         self.__calorias_porcao = calorias_porcao
         self.__custo_total = custo_total
         self.__custo_porcao - custo_porcao
@@ -86,12 +86,12 @@ class Receita():
 
     @property
     def ingredientes(self) -> list:
-        return self.__ingredientes
+        return self.__itens
 
-    @ingredientes.setter # talvez não precise
+    @ingredientes.setter  # talvez não precise
     def ingredientes(self, ingredientes: list) -> None:
         if isinstance(ingredientes, list):
-            self.__ingredientes = ingredientes
+            self.__itens = ingredientes
 
     @property
     def modo_preparo(self) -> str:
@@ -129,10 +129,35 @@ class Receita():
         if isinstance(custo_porcao, float):
             self.__custo_porcao = custo_porcao
 
-    # MÉTODOS PÚBLICOS
-    def incluir_ingrediente(self) -> None:
-        pass
-    
-    
     # MÉTODOS AUXILIARES
+    def buscar_item_por_insumo(self, insumo: Insumo) -> Insumo:
+        if isinstance(insumo, Insumo):
+            for item in self.__itens:
+                if item.insumo == insumo:
+                    return item
+    
+    def listar_insumos_e_qtds(self) -> dict:
+        insumos_qtds = {}
+        for item in self.__itens:
+            insumos_qtds.update({item.insumo: item.qtd_bruta})
+        return insumos_qtds
 
+
+
+
+    # CRUD --- CONTROLADOR
+
+    def incluir_item(self, insumo_novo: Insumo) -> None:
+        if isinstance(insumo_novo, Insumo) and self.buscar_item_por_insumo(insumo_novo) is None:
+            self.__itens.append(ItemDeReceita(insumo_novo))
+
+    def alterar_insumo_de_item(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
+        if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
+            item_antigo = self.buscar_item_por_insumo(insumo_antigo)
+            item_novo = self.buscar_item_por_insumo(insumo_novo)
+
+            if item_antigo is None or item_novo is not None:
+                raise ValueError
+
+            self.__itens[self.__itens.index(
+                item_antigo)] = self.__itens[self.__itens.index(item_novo)]
