@@ -9,7 +9,7 @@ class ItemDeReceita():
         self.__insumo = insumo
         self.__fator_correcao = 1.0
         self.__indice_coccao = 1.0
-        self.__calcula_por_qtd_bruta = True # Fator de correção calculado por qtd_bruta ou limpa
+        self.__calcula_por_qtd_bruta = True # Atualizar no diagrama de classe
         self.__qtd_bruta = 0.0              # Atualizar no diagrama de classe
         self.__qtd_limpa = 0.0              # Atualizar no diagrama de classe
         self.__qtd_pronta = 0.0             # Atualizar no diagrama de classe
@@ -99,24 +99,24 @@ class ItemDeReceita():
         if isinstance(qtd_pronta, float) and qtd_pronta >= 0:
             self.__qtd_pronta = qtd_pronta
 
-    # Custos e calorias
+    # Custos e calorias - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
     @property
     def calorias(self) -> float:
         return self.__calorias
 
-    @calorias.setter
-    def calorias(self, calorias: float) -> None:
-        if isinstance(calorias, float) and calorias >= 0:
-            self.__calorias = calorias
+    # @calorias.setter
+    # def calorias(self, calorias: float) -> None:
+    #     if isinstance(calorias, float) and calorias >= 0:
+    #         self.__calorias = calorias
 
     @property
     def custo(self) -> float:
         return self.__custo
 
-    @custo.setter
-    def custo(self, custo: float) -> None:
-        if isinstance(custo, float) and custo >= 0:
-            self.__custo = custo
+    # @custo.setter
+    # def custo(self, custo: float) -> None:
+    #     if isinstance(custo, float) and custo >= 0:
+    #         self.__custo = custo
 
     # MÉTODOS AUXILIARES
     def __atualizar_qtd_bruta(self) -> None:

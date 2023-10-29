@@ -6,28 +6,18 @@ class Receita():
     """Entidade que representa a receita (ficha técnica), calculando os parâmteros gerais e instanciando itens de receita."""
 
     # ATRIBUTOS
-    def __init__(self,
-                 codigo: str,
-                 nome: str,
-                 descricao: str,
-                 rendimento_porcoes: int,
-                 tempo_preparo: int,
-                 validade: int,
-                 modo_preparo: str,
-                 calorias_porcao: int,
-                 custo_total: float,
-                 custo_porcao: float) -> None:
+    def __init__(self, codigo: str, nome: str) -> None:
         self.__codigo = codigo
         self.__nome = nome
-        self.__descricao = descricao
-        self.__rendimento_porcoes = rendimento_porcoes  # Atualizar no diagrama de classes
-        self.__tempo_preparo = tempo_preparo  # Atualizar no diagrama de classes
-        self.__validade = validade
-        self.__modo_preparo = modo_preparo  # Atualizar no diagrama de classes
+        self.__descricao = ""
+        self.__rendimento_porcoes = 1   # Atualizar no diagrama de classes
+        self.__tempo_preparo = 0        # Atualizar no diagrama de classes
+        self.__validade = 0
+        self.__modo_preparo = ""        # Atualizar no diagrama de classes
         self.__itens = []
-        self.__calorias_porcao = calorias_porcao
-        self.__custo_total = custo_total
-        self.__custo_porcao - custo_porcao
+        self.__calorias_porcao = 0
+        self.__custo_total = 0.0
+        self.__custo_porcao - 0.0
 
     # GETTERS / SETTERS
     # Identificação
@@ -65,7 +55,7 @@ class Receita():
 
     @rendimento_porcoes.setter
     def rendimento_porcoes(self, rendimento_porcoes: int) -> None:
-        if isinstance(rendimento_porcoes, int):
+        if isinstance(rendimento_porcoes, int) and rendimento_porcoes > 0:
             self.__rendimento_porcoes = rendimento_porcoes
 
     @property
@@ -95,64 +85,77 @@ class Receita():
         if isinstance(modo_preparo, str):
             self.__modo_preparo = modo_preparo
 
-    # Lista de ingredientes
+    # Lista de ingredientes - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
     @property
     def itens(self) -> list:
         return self.__itens
 
-    # @itens.setter  # talvez não precise
+    # @itens.setter 
     # def itens(self, itens: list) -> None:
     #     if isinstance(itens, list):
     #         self.__itens = itens
 
-    # Calorias e Custos
+    # Calorias e Custos - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
     @property
     def calorias_porcao(self) -> int:
         return self.__calorias_porcao
 
-    @calorias_porcao.setter
-    def calorias_porcao(self, calorias_porcao: int) -> None:
-        if isinstance(calorias_porcao, int):
-            self.__calorias_porcao = calorias_porcao
+    # @calorias_porcao.setter
+    # def calorias_porcao(self, calorias_porcao: int) -> None:
+    #     if isinstance(calorias_porcao, int):
+    #         self.__calorias_porcao = calorias_porcao
 
     @property
     def custo_total(self) -> float:
         return self.__custo_total
 
-    @custo_total.setter
-    def custo_total(self, custo_total: float) -> None:
-        if isinstance(custo_total, float):
-            self.__custo_total = custo_total
+    # @custo_total.setter
+    # def custo_total(self, custo_total: float) -> None:
+    #     if isinstance(custo_total, float):
+    #         self.__custo_total = custo_total
 
     @property
     def custo_porcao(self) -> float:
         return self.__custo_porcao
 
-    @custo_porcao.setter
-    def custo_porcao(self, custo_porcao: float) -> None:
-        if isinstance(custo_porcao, float):
-            self.__custo_porcao = custo_porcao
+    # @custo_porcao.setter
+    # def custo_porcao(self, custo_porcao: float) -> None:
+    #     if isinstance(custo_porcao, float):
+    #         self.__custo_porcao = custo_porcao
 
     # CRUD
     def incluir_item_em_receita(self, insumo_novo: Insumo) -> None:
-        if isinstance(insumo_novo, Insumo) and self.__buscar_item_por_insumo(insumo_novo) is None:
-            self.__itens.append(ItemDeReceita(insumo_novo))
+        if isinstance(insumo_novo, Insumo):
+            if self.__buscar_item_por_insumo(insumo_novo) is None:
+                self.__itens.append(ItemDeReceita(insumo_novo))
+                self.__atualiza_calorias()
+                self.__atualiza_custos()
+            else:
+                raise ValueError
         else:
-            raise ValueError("Insumo já está incluso na receita!")
+            raise TypeError
 
     def excluir_item_de_receita(self, insumo: Insumo) -> None:
         if isinstance(insumo, Insumo):
             item = self.__buscar_item_por_insumo(insumo)
             self.__itens.remove(item)
+            self.__atualiza_calorias()
+            self.__atualiza_custos()
+        else:
+            raise TypeError
     
-    def alterar_insumo_de_item(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
+    def alterar_insumo(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
         if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
             item = self.__buscar_item_por_insumo(insumo_antigo)
             if item is None or self.__buscar_item_por_insumo(insumo_novo) is not None:
                 raise ValueError
             item.insumo = insumo_novo
+            self.__atualiza_calorias()
+            self.__atualiza_custos()
+        else:
+            raise TypeError
 
-    def alterar_quantidade_de_item(self, insumo: Insumo, quantidade: float) -> None:
+    def alterar_quantidade(self, insumo: Insumo, quantidade: float) -> None:
         if isinstance(insumo, Insumo) and isinstance(quantidade, float):
             item = self.__buscar_item_por_insumo(insumo)
             if item is None:
@@ -161,16 +164,36 @@ class Receita():
                 item.qtd_bruta = quantidade
             else:
                 item.qtd_limpa = quantidade
+            self.__atualiza_calorias()
+            self.__atualiza_custos()
+        else:
+            raise TypeError
 
     def alterar_fator_correcao(self, insumo: Insumo, fator: float) -> None:
         if isinstance(insumo, Insumo) and isinstance(fator, float):
             item = self.__buscar_item_por_insumo(insumo)
             if item is None:
-                raise ValueError()
+                raise ValueError
             if fator > 0:
                 item.fator_correcao = fator
             else:
                 raise ValueError
+            self.__atualiza_calorias()
+            self.__atualiza_custos()
+        else:
+            raise TypeError
+
+    def alterar_indice_coccao(self, insumo: Insumo, indice: float) -> None:
+        if isinstance(insumo, Insumo) and isinstance(indice, float):
+            item = self.__buscar_item_por_insumo(insumo)
+            if item is None:
+                raise ValueError
+            if indice > 0:
+                item.indice_coccao = indice
+            else:
+                raise ValueError
+        else:
+            raise TypeError
 
     # MÉTODOS AUXILIARES
     def __buscar_item_por_insumo(self, insumo: Insumo) -> Insumo:
@@ -178,7 +201,23 @@ class Receita():
             for item in self.__itens:
                 if item.insumo == insumo:
                     return item
+    
+    def __atualiza_custos(self) -> None:
+        custo_total = 0
+        for item in self.__itens:
+            custo_total += item.custo
+        
+        self.__custo_total = custo_total
+        self.__custo_porcao = custo_total / self.__rendimento_porcoes
+    
+    def __atualiza_calorias(self) -> None:
+        calorias_total = 0
+        for item in self.__itens:
+            calorias_total += item.calorias
+        
+        self.__calorias_porcao = calorias_total / self.__rendimento_porcoes
 
+    # MÉTODOS PÚBLICOS
     def listar_insumos_e_quantidades(self) -> dict:
         insumos_qtds = {}
         for item in self.__itens:
