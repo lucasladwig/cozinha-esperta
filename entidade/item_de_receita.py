@@ -9,13 +9,15 @@ class ItemDeReceita():
         self.__insumo = insumo
         self.__fator_correcao = 1.0
         self.__indice_coccao = 1.0
-        self.__qtd_bruta = 0.0            # Atualizar no diagrama de classe
-        self.__qtd_limpa = 0.0            # Atualizar no diagrama de classe
-        self.__qtd_pronta = 0.0          # Atualizar no diagrama de classe
+        self.__calcula_por_qtd_bruta = True # Fator de correção calculado por qtd_bruta ou limpa
+        self.__qtd_bruta = 0.0              # Atualizar no diagrama de classe
+        self.__qtd_limpa = 0.0              # Atualizar no diagrama de classe
+        self.__qtd_pronta = 0.0             # Atualizar no diagrama de classe
         self.__calorias = 0
         self.__custo = 0.0
 
     # GETTERS / SETTERS
+    # Ingrediente
     @property
     def insumo(self) -> float:
         return self.__insumo
@@ -24,7 +26,10 @@ class ItemDeReceita():
     def insumo(self, insumo: Insumo) -> None:
         if isinstance(insumo, Insumo):
             self.__insumo = insumo
+            self.__atualizar_custo()
+            self.__atualizar_calorias()
 
+    # Fatores para cálculo
     @property
     def fator_correcao(self) -> float:
         return self.__fator_correcao
@@ -33,6 +38,13 @@ class ItemDeReceita():
     def fator_correcao(self, fator_correcao: float) -> None:
         if isinstance(fator_correcao, float) and fator_correcao > 0:
             self.__fator_correcao = fator_correcao
+            if self.__calcula_por_qtd_bruta:
+                self.__atualizar_qtd_limpa()
+            else:
+                self.__atualizar_qtd_bruta()
+            self.__atualizar_qtd_pronta()
+            self.__atualizar_custo()
+            self.__atualizar_calorias()
 
     @property
     def indice_coccao(self) -> float:
@@ -42,7 +54,18 @@ class ItemDeReceita():
     def indice_coccao(self, indice_coccao: float) -> None:
         if isinstance(indice_coccao, float) and indice_coccao > 0:
             self.__indice_coccao = indice_coccao
+            self.__atualizar_qtd_pronta()
 
+    @property
+    def calcula_por_qtd_bruta(self) -> bool:
+        return self.__calcula_por_qtd_bruta
+
+    @calcula_por_qtd_bruta.setter
+    def calcula_por_qtd_bruta(self, calcula_por_qtd_bruta: bool) -> None:
+        if isinstance(calcula_por_qtd_bruta, bool):
+            self.__calcula_por_qtd_bruta = calcula_por_qtd_bruta
+
+    # Quantidades
     @property
     def qtd_bruta(self) -> float:
         return self.__qtd_bruta
@@ -51,8 +74,10 @@ class ItemDeReceita():
     def qtd_bruta(self, qtd_bruta: float) -> None:
         if isinstance(qtd_bruta, float) and qtd_bruta >= 0:
             self.__qtd_bruta = qtd_bruta
-            self.__atualizar_qtd_limpa_por_qtd_bruta()
-            self.__atualizar_parametros()
+            self.__atualizar_qtd_limpa()
+            self.__atualizar_qtd_pronta()
+            self.__atualizar_custo()
+            self.__atualizar_calorias()
 
     @property
     def qtd_limpa(self) -> float:
@@ -62,8 +87,8 @@ class ItemDeReceita():
     def qtd_limpa(self, qtd_limpa: float) -> None:
         if isinstance(qtd_limpa, float) and qtd_limpa >= 0:
             self.__qtd_limpa = qtd_limpa
-            self.__atualizar_qtd_bruta_por_qtd_limpa()
-            self.__atualizar_parametros()
+            self.__atualizar_qtd_pronta()
+            self.__atualizar_calorias()
 
     @property
     def qtd_pronta(self) -> float:
@@ -74,6 +99,7 @@ class ItemDeReceita():
         if isinstance(qtd_pronta, float) and qtd_pronta >= 0:
             self.__qtd_pronta = qtd_pronta
 
+    # Custos e calorias
     @property
     def calorias(self) -> float:
         return self.__calorias
@@ -93,13 +119,17 @@ class ItemDeReceita():
             self.__custo = custo
 
     # MÉTODOS AUXILIARES
-    def __atualizar_qtd_bruta_por_qtd_limpa(self) -> None:
+    def __atualizar_qtd_bruta(self) -> None:
         self.__qtd_bruta = self.__qtd_limpa * self.__fator_correcao
 
-    def __atualizar_qtd_limpa_por_qtd_bruta(self) -> None:
+    def __atualizar_qtd_limpa(self) -> None:
         self.__qtd_limpa = self.__qtd_bruta / self.__fator_correcao
 
-    def __atualizar_parametros(self) -> None:
+    def __atualizar_qtd_pronta(self) -> None:
         self.__qtd_pronta = self.__qtd_limpa * self.__indice_coccao
+
+    def __atualizar_custo(self) -> None:
         self.__custo = self.__qtd_bruta * self.__insumo.custo_unitario
+
+    def __atualizar_calorias(self) -> None:
         self.__calorias = self.__qtd_limpa * self.__insumo.caloria_por_unidade

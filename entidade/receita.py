@@ -30,6 +30,7 @@ class Receita():
         self.__custo_porcao - custo_porcao
 
     # GETTERS / SETTERS
+    # Identificação
     @property
     def codigo(self) -> str:
         return self.__codigo
@@ -57,6 +58,7 @@ class Receita():
         if isinstance(descricao, str):
             self.__descricao = descricao
 
+    # Preparo, Rendimento e Validade
     @property
     def rendimento_porcoes(self) -> int:
         return self.__rendimento_porcoes
@@ -85,15 +87,6 @@ class Receita():
             self.__validade = validade
 
     @property
-    def ingredientes(self) -> list:
-        return self.__itens
-
-    @ingredientes.setter  # talvez não precise
-    def ingredientes(self, ingredientes: list) -> None:
-        if isinstance(ingredientes, list):
-            self.__itens = ingredientes
-
-    @property
     def modo_preparo(self) -> str:
         return self.__modo_preparo
 
@@ -102,6 +95,17 @@ class Receita():
         if isinstance(modo_preparo, str):
             self.__modo_preparo = modo_preparo
 
+    # Lista de ingredientes
+    @property
+    def itens(self) -> list:
+        return self.__itens
+
+    # @itens.setter  # talvez não precise
+    # def itens(self, itens: list) -> None:
+    #     if isinstance(itens, list):
+    #         self.__itens = itens
+
+    # Calorias e Custos
     @property
     def calorias_porcao(self) -> int:
         return self.__calorias_porcao
@@ -129,35 +133,54 @@ class Receita():
         if isinstance(custo_porcao, float):
             self.__custo_porcao = custo_porcao
 
+    # CRUD
+    def incluir_item_em_receita(self, insumo_novo: Insumo) -> None:
+        if isinstance(insumo_novo, Insumo) and self.__buscar_item_por_insumo(insumo_novo) is None:
+            self.__itens.append(ItemDeReceita(insumo_novo))
+        else:
+            raise ValueError("Insumo já está incluso na receita!")
+
+    def excluir_item_de_receita(self, insumo: Insumo) -> None:
+        if isinstance(insumo, Insumo):
+            item = self.__buscar_item_por_insumo(insumo)
+            self.__itens.remove(item)
+    
+    def alterar_insumo_de_item(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
+        if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
+            item = self.__buscar_item_por_insumo(insumo_antigo)
+            if item is None or self.__buscar_item_por_insumo(insumo_novo) is not None:
+                raise ValueError
+            item.insumo = insumo_novo
+
+    def alterar_quantidade_de_item(self, insumo: Insumo, quantidade: float) -> None:
+        if isinstance(insumo, Insumo) and isinstance(quantidade, float):
+            item = self.__buscar_item_por_insumo(insumo)
+            if item is None:
+                raise ValueError
+            if item.calcula_por_qtd_bruta:
+                item.qtd_bruta = quantidade
+            else:
+                item.qtd_limpa = quantidade
+
+    def alterar_fator_correcao(self, insumo: Insumo, fator: float) -> None:
+        if isinstance(insumo, Insumo) and isinstance(fator, float):
+            item = self.__buscar_item_por_insumo(insumo)
+            if item is None:
+                raise ValueError()
+            if fator > 0:
+                item.fator_correcao = fator
+            else:
+                raise ValueError
+
     # MÉTODOS AUXILIARES
-    def buscar_item_por_insumo(self, insumo: Insumo) -> Insumo:
+    def __buscar_item_por_insumo(self, insumo: Insumo) -> Insumo:
         if isinstance(insumo, Insumo):
             for item in self.__itens:
                 if item.insumo == insumo:
                     return item
-    
-    def listar_insumos_e_qtds(self) -> dict:
+
+    def listar_insumos_e_quantidades(self) -> dict:
         insumos_qtds = {}
         for item in self.__itens:
             insumos_qtds.update({item.insumo: item.qtd_bruta})
         return insumos_qtds
-
-
-
-
-    # CRUD --- CONTROLADOR
-
-    def incluir_item(self, insumo_novo: Insumo) -> None:
-        if isinstance(insumo_novo, Insumo) and self.buscar_item_por_insumo(insumo_novo) is None:
-            self.__itens.append(ItemDeReceita(insumo_novo))
-
-    def alterar_insumo_de_item(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
-        if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
-            item_antigo = self.buscar_item_por_insumo(insumo_antigo)
-            item_novo = self.buscar_item_por_insumo(insumo_novo)
-
-            if item_antigo is None or item_novo is not None:
-                raise ValueError
-
-            self.__itens[self.__itens.index(
-                item_antigo)] = self.__itens[self.__itens.index(item_novo)]
