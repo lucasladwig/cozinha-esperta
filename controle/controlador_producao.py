@@ -27,33 +27,36 @@ class ControladorProducao:
         if producao.status == True:
             return self.__tela_mensagem.open("Você não pode alterar uma produção que já foi feita!")
 
-        else:
-            if valores["it_quantidade"] != str(producao.numero_porcoes):
-                try:
-                    numero_porcoes = int(valores["it_quantidade"])
-                    if numero_porcoes < 0:
-                        raise ValueError
-                    producao.numero_porcoes = numero_porcoes
-                except (ValueError, TypeError):
-                    self.__tela_mensagem.open("Caractere Invalido!")
-                    return
+        if valores["it_quantidade"] != str(producao.numero_porcoes):
+            try:
+                numero_porcoes = int(valores["it_quantidade"])
+                if numero_porcoes < 0:
+                    raise ValueError
+                producao.numero_porcoes = numero_porcoes
+            except (ValueError, TypeError):
+                self.__tela_mensagem.open("Caractere Invalido!")
+                return
 
-            if valores["it_data"] != producao.data_producao:
-                # como trabalhar com a data
-                try:
-                    data_producao = (valores["it_data"])
-                    data_formatada = datetime.strptime(
-                        data_producao, "%Y-%m-%d %H:%M:%S")
+        try:
+            data_producao = (valores["it_data"])
+            data_formatada = datetime.strptime(
+                data_producao, "%Y-%m-%d %H:%M:%S")
+            data_formatada = data_formatada.date()
+        except ValueError:
+            try:
+                data_producao = (valores["it_data"])
+                data_formatada = datetime.strptime(data_producao, "%Y-%m-%d")
+            except ValueError:
+                return self.__tela_mensagem.open("Erro na Data")
 
-                    if data_formatada.date() < datetime.now().date():
-                        return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
+        if data_formatada.date() < datetime.now().date():
+            return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
 
-                    producao.data_producao = data_formatada.date()
-                except BaseException:
-                    return self.__tela_mensagem.open("Erro na Data")
+        if data_formatada != producao.data_producao:
+            producao.data_producao = data_formatada.date()
 
-            self.__producao_dao.add(producao=producao)
-            self.__tela_mensagem.open("Alteração Concluida!")
+        self.__producao_dao.add(producao=producao)
+        self.__tela_mensagem.open("Alteração Concluida!")
 
     def cria_producao(self, potencial_producao):
         # verificação do objeto receita
@@ -133,8 +136,8 @@ class ControladorProducao:
 
     def abre_tela(self):
         while True:
-            botao, valores = self.__tela_producao.open(
-                self.__monta_lista())
+            botao, valores = self.__tela_producao.open(self.__monta_lista())
+            self.__tela_producao.close()
 
             if botao == "Nova Produção":
                 receitas = Receitas
@@ -144,6 +147,7 @@ class ControladorProducao:
                     self.cria_producao(informacoes)
 
                 self.__tela_insere_producao.close()
+
             elif botao == "Editar Produção":
                 if valores["id"] == None:
                     self.__tela_mensagem.open(
