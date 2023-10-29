@@ -153,7 +153,6 @@ class ControladorProducao:
                     self.__tela_mensagem.open(
                         "Não foi selecionado nenhuma linha!")
                 else:
-                    receitas = Receitas
                     informacoes = self.__tela_edita_producao.open(
                         self.lista_dados_producao(valores["id"]))
                     self.edita_producao(informacoes, valores["id"])
