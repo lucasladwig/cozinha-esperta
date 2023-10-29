@@ -75,6 +75,15 @@ class ControladorInsumo:
             lista_auxiliar.append(values.calorias_por_unidade)
             lista_insumo.append(lista_auxiliar)
         return lista_insumo
+    
+    def listar_insumos(self):
+        """Retorna uma lista com todos os objetos do tipo Insumo cadastrados."""
+        lista_insumos = []
+        
+        for insumo in self.__insumo_dao.get_all():
+            lista_insumos.append(insumo)
+        
+        return lista_insumos
 
     def abre_tela(self):
         while True:
