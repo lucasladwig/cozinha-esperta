@@ -49,7 +49,7 @@ class ControladorProducao:
             except ValueError:
                 return self.__tela_mensagem.open("Erro na Data")
 
-        if data_formatada.date() < datetime.now().date():
+        if data_formatada < datetime.now().date():
             return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
 
         if data_formatada != producao.data_producao:
