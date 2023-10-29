@@ -95,7 +95,7 @@ class ControladorProducao:
         else:
             return None
 
-    def lista_dados_producao(self, id):
+    def lista_dados_producao(self, id: str):
         lista_objeto_producao = []
         producao = self.busca_producao_por_id(id)
         lista_objeto_producao.append(producao.receita["nome"].title())
@@ -104,7 +104,7 @@ class ControladorProducao:
         return lista_objeto_producao
 
     def __monta_lista(self):
-        lista_insumo = []
+        lista_producao = []
         producoes = self.__producao_dao.get_all()
         try:
             for values in producoes:
@@ -117,12 +117,12 @@ class ControladorProducao:
                 lista_auxiliar.append(values.numero_porcoes)
                 lista_auxiliar.append(
                     "Produzido" if values.status else "Não Produzido")
-                lista_insumo.append(lista_auxiliar)
-            return lista_insumo
+                lista_producao.append(lista_auxiliar)
+            return lista_producao
         except:
-            return lista_insumo
+            return lista_producao
 
-    def __produz(self, id):
+    def __produz(self, id: str):
         producao = self.busca_producao_por_id(id)
         if producao.status:
             self.__tela_mensagem.open(
