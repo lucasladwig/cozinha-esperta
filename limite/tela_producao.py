@@ -7,9 +7,11 @@ class TelaProducao:
         self.init_components()
 
     def init_components(self, lista=[]):
-        layout = [[sg.Table(values=lista, headings=["Receita", "custo Total de Produção", "Data Produção", "Numero de Porções", "Status"], auto_size_columns=True, expand_x=True, expand_y=True, key="tab_objeto", justification="left", select_mode="browse")],
-                  [sg.Button("Voltar"), sg.Button("Editar Estoque Insumo")]]
-        self.__window = sg.Window("Estoque de Insumos").layout(layout)
+        layout = [[sg.Table(values=lista, headings=["Id ", "Receita", "Custo Total de Produção", "Data de Produção", "Numero de Porções", "Status"], auto_size_columns=True, expand_x=True, expand_y=True, key="tab_objeto", justification="left", select_mode="browse")],
+                  [sg.Button("Excluir Produção"), sg.Button("Produzir"), sg.Button(
+                      "Editar Produção"), sg.Button("Nova Produção")],
+                  [sg.Button("Voltar")]]
+        self.__window = sg.Window("Gerenciador de Produções").layout(layout)
 
     def open(self, lista=[]):
         self.init_components(lista)
@@ -18,10 +20,10 @@ class TelaProducao:
         if botao == sg.WINDOW_CLOSED:
             return 'Voltar', None
         try:
-            valores["nome"] = self.__window.find_element("tab_objeto").get()[
+            valores["id"] = self.__window.find_element("tab_objeto").get()[
                 linha[0]][0]
         except:
-            valores["nome"] = None
+            valores["id"] = None
         return botao, valores
 
     def close(self):

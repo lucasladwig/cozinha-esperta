@@ -4,11 +4,11 @@ from entidade.producao import Producao
 
 class ProducaoDAO(DAO):
     def __init__(self):
-        super().__init__('insumo.pkl')
+        super().__init__('dados/producao.pkl')
 
     def add(self, producao: Producao):
-        if isinstance(producao, Producao) and isinstance(producao.nome, str):
-            super().add(producao.nome, producao)
+        if isinstance(producao, Producao):
+            super().add(str(producao.id), producao)
 
     def get(self, key: int):
         if isinstance(key, int):
