@@ -22,15 +22,16 @@ class ControladorProducao:
         # self.__tela_atualiza_estoque_insumo.close()
         producao = self.busca_producao_por_id(id)
         if valores == None:
-            return
+            return self.__tela_mensagem.open("Nenhuma Produção Selecionada!")
 
         if producao.status == True:
             return self.__tela_mensagem.open("Você não pode alterar uma produção que já foi feita!")
 
+        # botar so o except
         if valores["it_quantidade"] != str(producao.numero_porcoes):
             try:
                 numero_porcoes = int(valores["it_quantidade"])
-                if numero_porcoes < 0:
+                if numero_porcoes < 1:
                     raise ValueError
                 producao.numero_porcoes = numero_porcoes
             except (ValueError, TypeError):
@@ -163,7 +164,6 @@ class ControladorProducao:
                     self.__tela_mensagem.open(
                         "Não foi selecionado nenhuma linha!")
                 else:
-                    self.__tela_producao.close()
                     producao = self.__produz(valores["id"])
                     self.__producao_dao.add(producao)
 
@@ -172,7 +172,6 @@ class ControladorProducao:
                     self.__tela_mensagem.open(
                         "Não foi selecionado nenhuma linha!")
                 else:
-                    self.__tela_producao.close()
                     self.__producao_dao.remove(valores["id"])
                     self.__tela_mensagem.open(
                         "Remoção Concluida!")
