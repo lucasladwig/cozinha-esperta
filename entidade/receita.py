@@ -6,7 +6,7 @@ class Receita():
     """Entidade que representa a receita (ficha técnica), calculando os parâmteros gerais e instanciando itens de receita."""
 
     # ATRIBUTOS
-    def __init__(self, codigo: str, nome: str) -> None:
+    def __init__(self, codigo: str, nome: str, custo_fixo: float) -> None:
         self.__codigo = codigo
         self.__nome = nome
         self.__descricao = ""
@@ -17,7 +17,8 @@ class Receita():
         self.__itens = []
         self.__calorias_porcao = 0
         self.__custo_total = 0.0
-        self.__custo_porcao - 0.0
+        self.__custo_porcao = 0.0
+        self.__custo_fixo = custo_fixo
 
     # GETTERS / SETTERS
     # Identificação
@@ -27,7 +28,7 @@ class Receita():
 
     @codigo.setter
     def codigo(self, codigo: str) -> None:
-        if isinstance(codigo, str):
+        if isinstance(codigo, str) and len(codigo) <= 10:
             self.__codigo = codigo
 
     @property
@@ -90,10 +91,10 @@ class Receita():
     def itens(self) -> list:
         return self.__itens
 
-    # @itens.setter 
-    # def itens(self, itens: list) -> None:
-    #     if isinstance(itens, list):
-    #         self.__itens = itens
+    @itens.setter 
+    def itens(self, itens: list) -> None:
+        if isinstance(itens, list):
+            self.__itens = itens
 
     # Calorias e Custos - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
     @property
@@ -122,6 +123,10 @@ class Receita():
     # def custo_porcao(self, custo_porcao: float) -> None:
     #     if isinstance(custo_porcao, float):
     #         self.__custo_porcao = custo_porcao
+
+    @property
+    def custo_fixo(self) -> float:
+        return self.__custo_fixo
 
     # CRUD
     def incluir_item_em_receita(self, insumo_novo: Insumo) -> None:
@@ -201,6 +206,8 @@ class Receita():
             for item in self.__itens:
                 if item.insumo == insumo:
                     return item
+        else:
+            raise TypeError
     
     def __atualiza_custos(self) -> None:
         custo_total = 0
@@ -208,7 +215,7 @@ class Receita():
             custo_total += item.custo
         
         self.__custo_total = custo_total
-        self.__custo_porcao = custo_total / self.__rendimento_porcoes
+        self.__custo_porcao = (custo_total / self.__rendimento_porcoes) + self.__custo_fixo
     
     def __atualiza_calorias(self) -> None:
         calorias_total = 0
@@ -223,3 +230,18 @@ class Receita():
         for item in self.__itens:
             insumos_qtds.update({item.insumo: item.qtd_bruta})
         return insumos_qtds
+
+    def listar_dados_itens(self) -> list:
+        dados_itens = []
+        for item in self.__itens:
+            dados_itens.append(item.insumo.nome)
+            dados_itens.append(item.insumo.unidade)
+            dados_itens.append(item.qtd_bruta)
+            dados_itens.append(item.fator_correcao)
+            dados_itens.append(item.qtd_limpa)
+            dados_itens.append(item.indice_coccao)
+            dados_itens.append(item.qtd_pronta)
+            dados_itens.append(item.calorias)
+            dados_itens.append(item.custo)
+
+        return dados_itens
