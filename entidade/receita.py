@@ -10,8 +10,8 @@ class Receita():
         self.__codigo = codigo
         self.__nome = nome
         self.__descricao = ""
-        self.__rendimento_porcoes = 1   # Atualizar no diagrama de classes
-        self.__tempo_preparo = 0        # Atualizar no diagrama de classes
+        self.__rendimento_porcoes = 1
+        self.__tempo_preparo = 0
         self.__validade = 0
         self.__modo_preparo = ""        # Atualizar no diagrama de classes
         self.__itens = []
@@ -232,16 +232,16 @@ class Receita():
         return insumos_qtds
 
     def listar_dados_itens(self) -> list:
-        dados_itens = []
+        itens = []
         for item in self.__itens:
-            dados_itens.append(item.insumo.nome)
-            dados_itens.append(item.insumo.unidade)
-            dados_itens.append(item.qtd_bruta)
-            dados_itens.append(item.fator_correcao)
-            dados_itens.append(item.qtd_limpa)
-            dados_itens.append(item.indice_coccao)
-            dados_itens.append(item.qtd_pronta)
-            dados_itens.append(item.calorias)
-            dados_itens.append(item.custo)
-
-        return dados_itens
+            dados_item =[]
+            dados_item.append(item.insumo.nome)
+            dados_item.append(item.insumo.unidade)
+            dados_item.append(item.qtd_bruta)
+            dados_item.append(item.fator_correcao)
+            dados_item.append(item.qtd_limpa)
+            dados_item.append(item.indice_coccao)
+            dados_item.append(item.qtd_pronta)
+            dados_item.append(item.calorias)
+            dados_item.append(item.custo)
+        return itens
