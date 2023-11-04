@@ -98,25 +98,28 @@ class ControladorReceita:
 
     # CRUD
     def incluir_receita(self, dados_receita: dict) -> None:
-        codigo = dados_receita["codigo"]
-        nome = dados_receita["nome"]
+        codigo = dados_receita.get("codigo")
+        nome = dados_receita.get("nome")
 
-        if (self.__buscar_receita_por_codigo(codigo) is not None
-                or self.__buscar_receita_por_nome(nome) is not None):
-            raise ValueError
+        if self.__buscar_receita_por_codigo(codigo) is not None or self.__buscar_receita_por_nome(nome) is not None:
+            raise ValueError("Receita já existe!")
 
-        nova_receita = Receita(
-            codigo, nome, self.controlador_custos_fixos.enviar_custo_fixo_porcao())
-        nova_receita.descricao = dados_receita["descricao"]
-        nova_receita.rendimento_porcoes = dados_receita["rendimento_porcoes"]
-        nova_receita.tempo_preparo = dados_receita["tempo_preparo"]
-        nova_receita.validade = dados_receita["validade"]
-        nova_receita.modo_preparo = dados_receita["modo_preparo"]
-        nova_receita.itens = dados_receita["itens"]
+        custo_fixo_porcao = self.controlador_custos_fixos.enviar_custo_fixo_porcao()
+
+        nova_receita = Receita(codigo, nome, custo_fixo_porcao)
+        nova_receita.descricao = dados_receita.get("descricao")
+        nova_receita.rendimento_porcoes = dados_receita.get(
+            "rendimento_porcoes")
+        nova_receita.tempo_preparo = dados_receita.get("tempo_preparo")
+        nova_receita.validade = dados_receita.get("validade")
+        nova_receita.modo_preparo = dados_receita.get("modo_preparo")
+        nova_receita.itens = dados_receita.get("itens")
 
         self.dao.add(nova_receita)
 
     def alterar_receita(self, dados_receita: dict) -> None:
+        if dados_receita is None:
+            dados_receita = self.__DADOS_BASE
         codigo = dados_receita["codigo"]
         nome = dados_receita["nome"]
 
@@ -152,7 +155,8 @@ class ControladorReceita:
             else:
                 raise TypeError
         except TypeError:
-            self.tela_gerenciador_receita.mostrar_mensagem("Nome de receita inválido!", titulo="Erro")
+            self.tela_gerenciador_receita.mostrar_mensagem(
+                "Nome de receita inválido!", titulo="Erro")
 
     def __listar_receitas(self) -> list:
         receitas = []
