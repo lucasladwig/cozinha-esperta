@@ -34,6 +34,8 @@ class TelaInsereProducao:
         if botao == "Salvar":
             receita_escolhida = [
                 receita for receita in receitas if receita["nome"] == valores["it_receita"]]
+            if not receita_escolhida:
+                return None
             valores["it_receita"] = receita_escolhida[0]
             return valores
         elif botao == "Cancelar":
