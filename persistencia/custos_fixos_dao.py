@@ -8,11 +8,15 @@ class CustosFixosDAO(DAO):
 
     def add(self, custos_fixos: CustosFixos):
         if isinstance(custos_fixos, CustosFixos):
-            super().add(len(self.cache)+1, custos_fixos)
+            # super().add(len(self.cache)+1, custos_fixos)
+            super().add(1, custos_fixos) # testando sobreescrever
 
-    def get(self, key: int):
-        if isinstance(key, int):
-            return super().get(key)
+    # def get(self, key: int):
+    #     if isinstance(key, int):
+    #         return super().get(key)
+
+    def get(self):
+        return super().get(1)
 
     def get_last(self):
         """Retorna o último objeto instanciado."""

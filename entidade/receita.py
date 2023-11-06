@@ -28,8 +28,10 @@ class Receita():
 
     @codigo.setter
     def codigo(self, codigo: str) -> None:
-        if isinstance(codigo, str) and len(codigo) <= 10:
+        if isinstance(codigo, str) and 0 < len(codigo) <= 10:
             self.__codigo = codigo
+        else:
+            raise ValueError("Insira um código de até 10 caracteres!")
 
     @property
     def nome(self) -> str:
@@ -91,7 +93,7 @@ class Receita():
     def itens(self) -> list:
         return self.__itens
 
-    @itens.setter 
+    @itens.setter
     def itens(self, itens: list) -> None:
         if isinstance(itens, list):
             self.__itens = itens
@@ -133,32 +135,32 @@ class Receita():
         if isinstance(insumo_novo, Insumo):
             if self.__buscar_item_por_insumo(insumo_novo) is None:
                 self.__itens.append(ItemDeReceita(insumo_novo))
-                self.__atualiza_calorias()
-                self.__atualiza_custos()
+                self.__atualizar_calorias()
+                self.__atualizar_custos()
             else:
-                raise ValueError
+                raise ValueError("Insumo já existe na receita!")
         else:
-            raise TypeError
+            raise TypeError("Parâmetro não é do tipo insumo!")
 
     def excluir_item_de_receita(self, insumo: Insumo) -> None:
         if isinstance(insumo, Insumo):
             item = self.__buscar_item_por_insumo(insumo)
             self.__itens.remove(item)
-            self.__atualiza_calorias()
-            self.__atualiza_custos()
+            self.__atualizar_calorias()
+            self.__atualizar_custos()
         else:
-            raise TypeError
-    
+            raise TypeError("Parâmetro não é do tipo insumo!")
+
     def alterar_insumo(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
         if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
             item = self.__buscar_item_por_insumo(insumo_antigo)
             if item is None or self.__buscar_item_por_insumo(insumo_novo) is not None:
                 raise ValueError
             item.insumo = insumo_novo
-            self.__atualiza_calorias()
-            self.__atualiza_custos()
+            self.__atualizar_calorias()
+            self.__atualizar_custos()
         else:
-            raise TypeError
+            raise TypeError("Parâmetro não é do tipo insumo!")
 
     def alterar_quantidade(self, insumo: Insumo, quantidade: float) -> None:
         if isinstance(insumo, Insumo) and isinstance(quantidade, float):
@@ -169,10 +171,10 @@ class Receita():
                 item.qtd_bruta = quantidade
             else:
                 item.qtd_limpa = quantidade
-            self.__atualiza_calorias()
-            self.__atualiza_custos()
+            self.__atualizar_calorias()
+            self.__atualizar_custos()
         else:
-            raise TypeError
+            raise TypeError("Parâmetro não é do tipo insumo!")
 
     def alterar_fator_correcao(self, insumo: Insumo, fator: float) -> None:
         if isinstance(insumo, Insumo) and isinstance(fator, float):
@@ -183,10 +185,10 @@ class Receita():
                 item.fator_correcao = fator
             else:
                 raise ValueError
-            self.__atualiza_calorias()
-            self.__atualiza_custos()
+            self.__atualizar_calorias()
+            self.__atualizar_custos()
         else:
-            raise TypeError
+            raise TypeError("Parâmetro não é do tipo insumo!")
 
     def alterar_indice_coccao(self, insumo: Insumo, indice: float) -> None:
         if isinstance(insumo, Insumo) and isinstance(indice, float):
@@ -198,7 +200,7 @@ class Receita():
             else:
                 raise ValueError
         else:
-            raise TypeError
+            raise TypeError("Parâmetro não é do tipo insumo!")
 
     # MÉTODOS AUXILIARES
     def __buscar_item_por_insumo(self, insumo: Insumo) -> Insumo:
@@ -207,21 +209,22 @@ class Receita():
                 if item.insumo == insumo:
                     return item
         else:
-            raise TypeError
-    
-    def __atualiza_custos(self) -> None:
+            raise TypeError("Parâmetro não é do tipo insumo!")
+
+    def __atualizar_custos(self) -> None:
         custo_total = 0
         for item in self.__itens:
             custo_total += item.custo
-        
+
         self.__custo_total = custo_total
-        self.__custo_porcao = (custo_total / self.__rendimento_porcoes) + self.__custo_fixo
-    
-    def __atualiza_calorias(self) -> None:
+        self.__custo_porcao = (
+            custo_total / self.__rendimento_porcoes) + self.__custo_fixo
+
+    def __atualizar_calorias(self) -> None:
         calorias_total = 0
         for item in self.__itens:
             calorias_total += item.calorias
-        
+
         self.__calorias_porcao = calorias_total / self.__rendimento_porcoes
 
     # MÉTODOS PÚBLICOS
@@ -234,7 +237,7 @@ class Receita():
     def listar_dados_itens(self) -> list:
         itens = []
         for item in self.__itens:
-            dados_item =[]
+            dados_item = []
             dados_item.append(item.insumo.nome)
             dados_item.append(item.insumo.unidade)
             dados_item.append(item.qtd_bruta)

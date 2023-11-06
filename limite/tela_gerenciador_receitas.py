@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 
 
-class TelaGerenciadorReceita:
+class TelaGerenciadorReceitas:
     """Interface de usuário para gerenciar as receitas."""
 
     # TEMA PADRÃO
@@ -45,9 +45,9 @@ class TelaGerenciadorReceita:
         botao, valores = self.__window.read()
         linha = valores["lista_receitas"]
         if linha:
-            valores["nome"] = self.__window.find_element("lista_receitas").get()[linha[0]][0]
+            valores["codigo"] = self.__window.find_element("lista_receitas").get()[linha[0]][0]
         else:
-            valores["nome"] = None
+            valores["codigo"] = None
         # try:
         #     valores["nome"] = self.__window.find_element("lista_receitas").get()[
         #         linha[0]][0]

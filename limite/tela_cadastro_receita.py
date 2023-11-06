@@ -13,6 +13,9 @@ class TelaCadastroReceita:
         self.__window = None
 
     def init_components(self, dados_receita: dict):
+        if dados_receita is None:
+            dados_receita = {}
+
         identificacao = [
             [sg.Push(),
              sg.Text("Nome:"),
@@ -60,8 +63,15 @@ class TelaCadastroReceita:
 
         itens = [
             [sg.Table(values=dados_receita.get('itens'),
-                      headings=["Insumo", "Un.", "Qtd. Bruta", "FC",
-                                "Qtd. Limpa", "IC", "Qtd. Pronta", "Calorias", "Custo"],
+                      headings=["Insumo",
+                                "Un.",
+                                "Qtd. Bruta",
+                                "FC",
+                                "Qtd. Limpa",
+                                "IC",
+                                "Qtd. Pronta",
+                                "Calorias",
+                                "Custo"],
                       auto_size_columns=True,
                       expand_x=True,
                       expand_y=True,
@@ -79,9 +89,12 @@ class TelaCadastroReceita:
             [sg.Frame("Identificação", identificacao, expand_x=True)],
             [sg.Frame("Preparo e Validade", preparo, expand_x=True)],
             [sg.Frame("Itens da receita", itens, expand_x=True)],
-            [sg.Text(f"Custo total: R${dados_receita.get('custo_total'):.2f}")],
-            [sg.Text(f"Custo por Porção: R${dados_receita.get('custo_porcao'):.2f}")],
-            [sg.Text(f"Calorias por Porção: {dados_receita.get('custo_porcao'):.2f} kcal")],
+            [sg.Text(
+                f"Custo total: R${dados_receita.get('custo_total', '0.00'):.2f}")],
+            [sg.Text(
+                f"Custo por Porção: R${dados_receita.get('custo_porcao', '0.00'):.2f}")],
+            [sg.Text(
+                f"Calorias por Porção: {dados_receita.get('custo_porcao', '0'):.2f} kcal")],
             [sg.Push(), sg.Button("Cancelar"), sg.Button("Salvar")]
         ]
 
