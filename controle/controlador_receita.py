@@ -34,7 +34,7 @@ class ControladorReceita:
         "indice_coccao": 1.0,
     }
 
-    def __init__(self) -> None:
+    def __init__(self) -> None:        
         # self.__controlador_sistema = None
         self.__controlador_insumos = ControladorInsumo()
         self.__controlador_custos_fixos = ControladorCustosFixos()
