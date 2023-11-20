@@ -11,8 +11,8 @@ class TelaGerenciadorReceitas:
     # INICIALIZAÇÃO
     def __init__(self):
         self.__window = None
-        self.valores_teste = [["AB-123", "Escondidinho de Camarão",
-                               "Lorem ipsumo dolor amnt it cuorsa clader umni"]]
+        # self.valores_teste = [["AB-123", "Escondidinho de Camarão",
+        #                        "Lorem ipsumo dolor amnt it cuorsa clader umni"]]
 
     def init_components(self, dados_receitas=None):
         if dados_receitas is None:
@@ -61,3 +61,8 @@ class TelaGerenciadorReceitas:
     # MOSTRAR MENSAGENS
     def mostrar_mensagem(self, mensagem, titulo=""):
         sg.popup(mensagem, title=titulo)
+
+    def confirmar_exclusão(self):
+        sg.popup_yes_no(
+            "Tem certeza que deseja excluir a receita selecionada? Essa ação NÃO pode ser desfeita!", 
+            title="Confirmar exclusão")

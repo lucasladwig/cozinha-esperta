@@ -97,6 +97,8 @@ class Receita():
     def itens(self, itens: list) -> None:
         if isinstance(itens, list):
             self.__itens = itens
+            self.__atualizar_calorias()
+            self.__atualizar_custos()
 
     # Calorias e Custos - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
     @property
@@ -131,25 +133,25 @@ class Receita():
         return self.__custo_fixo
 
     # CRUD
-    def incluir_item_em_receita(self, insumo_novo: Insumo) -> None:
-        if isinstance(insumo_novo, Insumo):
-            if self.__buscar_item_por_insumo(insumo_novo) is None:
-                self.__itens.append(ItemDeReceita(insumo_novo))
+    def incluir_item_em_receita(self, item_novo: ItemDeReceita) -> None:
+        if isinstance(item_novo, ItemDeReceita):
+            if self.__buscar_item_por_insumo(item_novo.insumo) is None:
+                self.__itens.append(item_novo)
                 self.__atualizar_calorias()
                 self.__atualizar_custos()
             else:
                 raise ValueError("Insumo já existe na receita!")
         else:
-            raise TypeError("Parâmetro não é do tipo insumo!")
+            raise TypeError("Parâmetro não é do tipo item de receita!")
 
-    def excluir_item_de_receita(self, insumo: Insumo) -> None:
-        if isinstance(insumo, Insumo):
-            item = self.__buscar_item_por_insumo(insumo)
+    def excluir_item_de_receita(self, item: ItemDeReceita) -> None:
+        if isinstance(item, ItemDeReceita):
             self.__itens.remove(item)
             self.__atualizar_calorias()
             self.__atualizar_custos()
         else:
             raise TypeError("Parâmetro não é do tipo insumo!")
+
 
     def alterar_insumo(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
         if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
@@ -210,6 +212,14 @@ class Receita():
                     return item
         else:
             raise TypeError("Parâmetro não é do tipo insumo!")
+
+    def buscar_item_por_nome_de_insumo(self, nome: str) -> Insumo:
+        if isinstance(nome, str):
+            for item in self.__itens:
+                if item.insumo.nome == nome:
+                    return item
+        else:
+            raise TypeError("Parâmetro não é do tipo string!")
 
     def __atualizar_custos(self) -> None:
         custo_total = 0

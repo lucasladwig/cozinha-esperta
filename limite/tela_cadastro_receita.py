@@ -12,7 +12,7 @@ class TelaCadastroReceita:
     def __init__(self):
         self.__window = None
 
-    def init_components(self, dados_receita: dict):
+    def init_components(self, dados_receita: dict, dados_itens: list):
         if dados_receita is None:
             dados_receita = {}
 
@@ -62,7 +62,7 @@ class TelaCadastroReceita:
         ]
 
         itens = [
-            [sg.Table(values=dados_receita.get('itens'),
+            [sg.Table(values=dados_itens,
                       headings=["Insumo",
                                 "Un.",
                                 "Qtd. Bruta",
@@ -90,25 +90,27 @@ class TelaCadastroReceita:
             [sg.Frame("Preparo e Validade", preparo, expand_x=True)],
             [sg.Frame("Itens da receita", itens, expand_x=True)],
             [sg.Text(
-                f"Custo total: R${dados_receita.get('custo_total', '0.00'):.2f}")],
+                f"Custo total: R${dados_receita.get('custo_total', '0.00'):.2f}", tooltip="Custo total da receita, não incluindo os custos fixos.")],
             [sg.Text(
-                f"Custo por Porção: R${dados_receita.get('custo_porcao', '0.00'):.2f}")],
+                f"Custo por Porção: R${dados_receita.get('custo_porcao', '0.00'):.2f}", tooltip="Custo por porção, incluindo os custos fixos.")],
             [sg.Text(
-                f"Calorias por Porção: {dados_receita.get('custo_porcao', '0'):.2f} kcal")],
+                f"Calorias por Porção: {dados_receita.get('custo_porcao', '0'):.2f} kcal", tooltip="Calorias (kcal) por porção")],
             [sg.Push(), sg.Button("Cancelar"), sg.Button("Salvar")]
         ]
 
         self.__window = sg.Window("Insumos", layout, resizable=True)
 
-    def open(self, dados_receita: dict):
-        self.init_components(dados_receita)
+    def open(self, dados_receita: dict, dados_itens: list):
+        self.init_components(dados_receita, dados_itens)
         botao, valores = self.__window.read()
-        linha = valores["tabela_itens_receita"]
-        try:
-            valores["nome"] = self.__window.find_element("tabela_itens_receita").get()[
-                linha[0]][0]
-        except:
-            valores["nome"] = None
+
+        # linha = valores["tabela_itens_receita"]
+        # try:
+        #     valores["nome"] = self.__window.find_element("tabela_itens_receita").get()[
+        #         linha[0]][0]
+        # except:
+        #     valores["nome"] = None
+        
         return botao, valores
 
     def close(self):
@@ -117,3 +119,8 @@ class TelaCadastroReceita:
     # MOSTRAR MENSAGENS
     def mostrar_mensagem(self, mensagem, titulo=""):
         sg.popup(mensagem, title=titulo)
+
+    def confirmar_exclusao(self):
+        sg.popup_yes_no(
+            "Tem certeza que deseja excluir o item selecionado? Essa ação NÃO pode ser desfeita!", 
+            title="Confirmar exclusão")
