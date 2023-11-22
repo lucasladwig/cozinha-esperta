@@ -24,7 +24,7 @@ class TelaCadastroItemDeReceita:
 
         layout = [
             [sg.Text("Insumo:"), sg.Combo(lista_insumos, key="nome_insumo")],
-            [sg.Text("Quantidade:"),
+            [sg.Text(f"Quantidade:"),
              sg.Input(key="qtd",
                       size=5,
                       default_text=f"{qtd_item}",

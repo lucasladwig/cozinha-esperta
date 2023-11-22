@@ -90,11 +90,11 @@ class TelaCadastroReceita:
             [sg.Frame("Preparo e Validade", preparo, expand_x=True)],
             [sg.Frame("Itens da receita", itens, expand_x=True)],
             [sg.Text(
-                f"Custo total: R${dados_receita.get('custo_total', '0.00'):.2f}", tooltip="Custo total da receita, não incluindo os custos fixos.")],
+                f"Custo total: R${dados_receita.get('custo_total', 0.0):.2f}", tooltip="Custo total da receita, não incluindo os custos fixos.")],
             [sg.Text(
-                f"Custo por Porção: R${dados_receita.get('custo_porcao', '0.00'):.2f}", tooltip="Custo por porção, incluindo os custos fixos.")],
+                f"Custo por Porção: R${dados_receita.get('custo_porcao', 0.0):.2f}", tooltip="Custo por porção, incluindo os custos fixos.")],
             [sg.Text(
-                f"Calorias por Porção: {dados_receita.get('custo_porcao', '0'):.2f} kcal", tooltip="Calorias (kcal) por porção")],
+                f"Calorias por Porção: {dados_receita.get('calorias_porcao', 0):.0f} kcal", tooltip="Calorias (kcal) por porção")],
             [sg.Push(), sg.Button("Cancelar"), sg.Button("Salvar")]
         ]
 
@@ -103,14 +103,6 @@ class TelaCadastroReceita:
     def open(self, dados_receita: dict, dados_itens: list):
         self.init_components(dados_receita, dados_itens)
         botao, valores = self.__window.read()
-
-        # linha = valores["tabela_itens_receita"]
-        # try:
-        #     valores["nome"] = self.__window.find_element("tabela_itens_receita").get()[
-        #         linha[0]][0]
-        # except:
-        #     valores["nome"] = None
-        
         return botao, valores
 
     def close(self):
@@ -121,6 +113,36 @@ class TelaCadastroReceita:
         sg.popup(mensagem, title=titulo)
 
     def confirmar_exclusao(self):
-        sg.popup_yes_no(
-            "Tem certeza que deseja excluir o item selecionado? Essa ação NÃO pode ser desfeita!", 
-            title="Confirmar exclusão")
+        layout = [
+            [sg.T('Tem certeza que deseja excluir o item selecionado?\nEssa ação NÃO pode ser desfeita!')],
+            [sg.Push(), sg.Button("Não", s=10), sg.Button("Sim", s=10)],
+        ]
+
+        escolha, _ = sg.Window("Confirmar exclusão",
+                               layout, disable_close=True).read(close=True)
+        return escolha
+
+    # TRATAR DADOS
+    # def __tratar_valores(self, valores_receita: dict) -> dict:
+    #     valores_tratados = valores_receita
+
+    #     try:
+    #         valores_tratados['rendimento_porcoes'] = int(
+    #             valores_tratados['rendimento_porcoes'])
+    #         valores_tratados['tempo_preparo'] = int(
+    #             valores_tratados['tempo_preparo'])
+    #         valores_tratados['validade'] = int(valores_tratados['validade'])
+
+    #         if (valores_tratados['rendimento_porcoes'] < 1
+    #             or valores_tratados['tempo_preparo'] < 1
+    #                 or valores_tratados['validade'] < 1):
+    #             raise ValueError
+
+    #         return valores_tratados
+
+    #     except TypeError:
+    #         self.mostrar_mensagem("Insira um número inteiro!", titulo="Erro!")
+
+    #     except ValueError:
+    #         self.mostrar_mensagem(
+    #             "Insira um número maior que zero!", titulo="Erro!")

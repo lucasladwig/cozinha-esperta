@@ -6,19 +6,30 @@ class Receita():
     """Entidade que representa a receita (ficha técnica), calculando os parâmteros gerais e instanciando itens de receita."""
 
     # ATRIBUTOS
-    def __init__(self, codigo: str, nome: str, custo_fixo: float) -> None:
+    def __init__(self,
+                 codigo: str,
+                 nome: str,
+                 custo_fixo: float,
+                 descricao: str = "",
+                 rendimento_porcoes: int = 1,
+                 tempo_preparo: int = 0,
+                 validade: int = 0,
+                 modo_preparo: str = "",
+                 ) -> None:
         self.__codigo = codigo
         self.__nome = nome
-        self.__descricao = ""
-        self.__rendimento_porcoes = 1
-        self.__tempo_preparo = 0
-        self.__validade = 0
-        self.__modo_preparo = ""        # Atualizar no diagrama de classes
+        self.__descricao = descricao
+        self.__rendimento_porcoes = rendimento_porcoes
+        self.__tempo_preparo = tempo_preparo
+        self.__validade = validade
+        self.__modo_preparo = modo_preparo
+        self.__custo_fixo = custo_fixo
         self.__itens = []
+        
+        # Atributos calculados
         self.__calorias_porcao = 0
         self.__custo_total = 0.0
         self.__custo_porcao = 0.0
-        self.__custo_fixo = custo_fixo
 
     # GETTERS / SETTERS
     # Identificação
@@ -58,8 +69,14 @@ class Receita():
 
     @rendimento_porcoes.setter
     def rendimento_porcoes(self, rendimento_porcoes: int) -> None:
-        if isinstance(rendimento_porcoes, int) and rendimento_porcoes > 0:
-            self.__rendimento_porcoes = rendimento_porcoes
+        if isinstance(rendimento_porcoes, int):
+            if rendimento_porcoes > 0:
+                self.__rendimento_porcoes = rendimento_porcoes
+            else: 
+                raise ValueError("Rendimento deve ser valor inteiro maior que zero!")
+        else:
+            raise TypeError("Rendimento deve ser um número inteiro!")
+        
 
     @property
     def tempo_preparo(self) -> int:
@@ -68,7 +85,12 @@ class Receita():
     @tempo_preparo.setter
     def tempo_preparo(self, tempo_preparo: int) -> None:
         if isinstance(tempo_preparo, int):
-            self.__tempo_preparo = tempo_preparo
+            if tempo_preparo >= 0:
+                self.__tempo_preparo = tempo_preparo
+            else: 
+                raise ValueError("Tempo de preparo deve ser valor inteiro maior que zero!")
+        else:
+            raise TypeError("Tempo de preparo deve ser um número inteiro!")
 
     @property
     def validade(self) -> int:
@@ -77,7 +99,12 @@ class Receita():
     @validade.setter
     def validade(self, validade: int) -> None:
         if isinstance(validade, int):
-            self.__validade = validade
+            if validade >= 0:
+                self.__validade = validade
+            else: 
+                raise ValueError("Validade deve ser valor inteiro maior que zero!")
+        else:
+            raise TypeError("Validade deve ser um número inteiro!")
 
     @property
     def modo_preparo(self) -> str:
@@ -152,7 +179,6 @@ class Receita():
         else:
             raise TypeError("Parâmetro não é do tipo insumo!")
 
-
     def alterar_insumo(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
         if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
             item = self.__buscar_item_por_insumo(insumo_antigo)
@@ -226,16 +252,15 @@ class Receita():
         for item in self.__itens:
             custo_total += item.custo
 
-        self.__custo_total = custo_total
-        self.__custo_porcao = (
-            custo_total / self.__rendimento_porcoes) + self.__custo_fixo
+        self.__custo_total = round(custo_total, 2)
+        self.__custo_porcao = round((custo_total / self.__rendimento_porcoes) + self.__custo_fixo, 2)
 
     def __atualizar_calorias(self) -> None:
         calorias_total = 0
         for item in self.__itens:
             calorias_total += item.calorias
 
-        self.__calorias_porcao = calorias_total / self.__rendimento_porcoes
+        self.__calorias_porcao = round(calorias_total / self.__rendimento_porcoes, 0)
 
     # MÉTODOS PÚBLICOS
     def listar_insumos_e_quantidades(self) -> dict:
@@ -244,17 +269,17 @@ class Receita():
             insumos_qtds.update({item.insumo: item.qtd_bruta})
         return insumos_qtds
 
-    def listar_dados_itens(self) -> list:
-        itens = []
-        for item in self.__itens:
-            dados_item = []
-            dados_item.append(item.insumo.nome)
-            dados_item.append(item.insumo.unidade)
-            dados_item.append(item.qtd_bruta)
-            dados_item.append(item.fator_correcao)
-            dados_item.append(item.qtd_limpa)
-            dados_item.append(item.indice_coccao)
-            dados_item.append(item.qtd_pronta)
-            dados_item.append(item.calorias)
-            dados_item.append(item.custo)
-        return itens
+    # def listar_dados_itens(self) -> list:
+    #     itens = []
+    #     for item in self.__itens:
+    #         dados_item = []
+    #         dados_item.append(item.insumo.nome)
+    #         dados_item.append(item.insumo.unidade)
+    #         dados_item.append(item.qtd_bruta)
+    #         dados_item.append(item.fator_correcao)
+    #         dados_item.append(item.qtd_limpa)
+    #         dados_item.append(item.indice_coccao)
+    #         dados_item.append(item.qtd_pronta)
+    #         dados_item.append(item.calorias)
+    #         dados_item.append(item.custo)
+    #     return itens

@@ -38,14 +38,15 @@ class TelaGerenciadorReceitas:
             [sg.Push(), sg.Button("Voltar")]
         ]
 
-        self.__window = sg.Window("Insumos", layout, resizable=True)
+        self.__window = sg.Window("Insumos", layout, size=(720, 420), resizable=True)
 
     def open(self, dados_receitas=[]):
         self.init_components(dados_receitas)
         botao, valores = self.__window.read()
         linha = valores["lista_receitas"]
         if linha:
-            valores["codigo"] = self.__window.find_element("lista_receitas").get()[linha[0]][0]
+            valores["codigo"] = self.__window.find_element(
+                "lista_receitas").get()[linha[0]][0]
         else:
             valores["codigo"] = None
         # try:
@@ -62,7 +63,11 @@ class TelaGerenciadorReceitas:
     def mostrar_mensagem(self, mensagem, titulo=""):
         sg.popup(mensagem, title=titulo)
 
-    def confirmar_exclusão(self):
-        sg.popup_yes_no(
-            "Tem certeza que deseja excluir a receita selecionada? Essa ação NÃO pode ser desfeita!", 
-            title="Confirmar exclusão")
+    def confirmar_exclusao(self):
+        layout = [
+            [sg.T('Tem certeza que deseja excluir esta receita?\nEssa ação NÃO pode ser desfeita!')],
+            [sg.Push(), sg.Button("Não", s=10), sg.Button("Sim", s=10)],
+        ]
+
+        escolha, _ = sg.Window("Confirmar exclusão",layout, disable_close=True).read(close=True)
+        return escolha
