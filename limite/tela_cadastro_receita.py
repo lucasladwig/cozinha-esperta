@@ -121,7 +121,7 @@ class TelaCadastroReceita:
 
         if (nome == "" or codigo == "") and evento == "Salvar":
             self.mostrar_mensagem(
-                "Nome e código não podem ser vazios!", titulo="Erro")
+                "Nome e código de receita não podem ser vazios!", titulo="Erro")
             self.fechar_tela()
             return evento, None
         

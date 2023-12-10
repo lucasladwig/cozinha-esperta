@@ -135,7 +135,7 @@ class ControladorReceita:
 
                     dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
                         itens_da_receita)
-                    
+
                     dados_receita_atual = valores_receita
                     pass
 
@@ -161,9 +161,9 @@ class ControladorReceita:
                     # Altera item de receita
                     self.alterar_item_de_receita(
                         item_a_editar, novos_dados_item)
-                    
+
                     dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
-                        itens_da_receita)                    
+                        itens_da_receita)
                     dados_receita_atual = valores_receita
 
                     self.__tela_cadastro_item_receita.fechar_tela()
@@ -185,7 +185,7 @@ class ControladorReceita:
                         itens_da_receita.remove(item_a_excluir)
 
                         dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
-                        itens_da_receita)                    
+                            itens_da_receita)
                         dados_receita_atual = valores_receita
                         self.__tela_cadastro_receita.fechar_tela()
                         # self.__tela_cadastro_item_receita.fechar_tela()
@@ -197,22 +197,28 @@ class ControladorReceita:
                 # Salvar nova Receita
                 if evento_receita == "Salvar":
                     if valores_receita is None:
-                        self.__tela_cadastro_receita.fechar_tela()
-                        evento_receita, valores_receita = self.__tela_cadastro_receita.abrir_tela(
-                            ControladorReceita.__DADOS_NOVA_RECEITA, [])
+                        dados_receita_atual = ControladorReceita.__DADOS_NOVA_RECEITA
                         itens_da_receita = []
-                        # continue
+                        dados_itens_receita_atual = []
 
-                    if receita is None:
+                        self.__tela_cadastro_receita.fechar_tela()
+                        continue
+
+                    elif receita is None and valores_receita is not None:
                         self.incluir_receita(
                             valores_receita, itens_da_receita)
-                    else:
+                        self.__tela_cadastro_receita.mostrar_mensagem(
+                            "Receita salva com sucesso!", titulo="Sucesso")
+                        self.__tela_cadastro_receita.fechar_tela()
+                        break
+                        
+                    elif receita is not None:
                         self.alterar_receita(
                             receita, valores_receita, itens_da_receita)
-                    self.__tela_cadastro_receita.mostrar_mensagem(
-                        "Receita salva com sucesso!", titulo="Sucesso")
-                    self.__tela_cadastro_receita.fechar_tela()
-                    break
+                        self.__tela_cadastro_receita.mostrar_mensagem(
+                            "Receita salva com sucesso!", titulo="Sucesso")
+                        self.__tela_cadastro_receita.fechar_tela()
+                        break
 
                 # Cancelar
                 elif evento_receita == "Cancelar":
@@ -221,8 +227,6 @@ class ControladorReceita:
 
                 self.__tela_cadastro_receita.fechar_tela()
                 # break
-            
-
 
         return evento_receita, valores_receita
 
