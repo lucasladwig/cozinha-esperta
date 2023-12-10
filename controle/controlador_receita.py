@@ -58,10 +58,11 @@ class ControladorReceita:
                 self.__listar_dados_todas_receitas())
             self.__tela_gerenciador_receitas.fechar_tela()
 
+            # NOVA RECEITA
             if acao_gerenciador == "Nova Receita...":
                 self.abrir_tela_receita(None)
 
-                # EDITAR RECEITA
+            # EDITAR RECEITA
             elif acao_gerenciador == "Editar Receita...":
                 if dados_gerenciador["codigo"] is None:
                     self.__tela_gerenciador_receitas.mostrar_mensagem(
@@ -204,6 +205,11 @@ class ControladorReceita:
                         self.__tela_cadastro_receita.fechar_tela()
                         continue
 
+                    elif self.__buscar_receita_por_codigo(valores_receita['codigo']) is not None:
+                        self.__tela_cadastro_receita.mostrar_mensagem(
+                            "Código de receita já existe!", titulo="Erro")
+                        self.__tela_cadastro_receita.fechar_tela()
+
                     elif receita is None and valores_receita is not None:
                         self.incluir_receita(
                             valores_receita, itens_da_receita)
@@ -211,7 +217,7 @@ class ControladorReceita:
                             "Receita salva com sucesso!", titulo="Sucesso")
                         self.__tela_cadastro_receita.fechar_tela()
                         break
-                        
+
                     elif receita is not None:
                         self.alterar_receita(
                             receita, valores_receita, itens_da_receita)
@@ -238,7 +244,8 @@ class ControladorReceita:
         novo_codigo = dados_receita["codigo"]
 
         if self.__buscar_receita_por_codigo(novo_codigo) is not None:
-            raise ValueError("Receita com este código já existe!")
+            self.__tela_cadastro_receita.mostrar_mensagem(
+                "Receita com este código já existe!", titulo="Erro")
 
         novo_nome = dados_receita["nome"]
         custo_fixo = self.__controlador_custos_fixos.enviar_custo_fixo_porcao()
