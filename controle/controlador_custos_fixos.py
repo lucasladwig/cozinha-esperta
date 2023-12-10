@@ -70,3 +70,7 @@ class ControladorCustosFixos():
         self.dao.add(custos_atual)
 
         return custos_atual
+
+    # MÉTODOS PÚBLICOS
+    def enviar_custo_fixo_porcao(self) -> float:
+        return self.dao.get_last().custo_fixo_por_porcao
