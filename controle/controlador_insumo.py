@@ -14,6 +14,12 @@ class ControladorInsumo:
         self.__insumo_dao = InsumoDAO()
         self.__tela_mensagem = TelaMensagem()
 
+    # GETTERS / SETTERS
+    @property
+    def insumo_dao(self):
+        return self.__insumo_dao
+
+    # CRUD Insumos
     def cadastra_insumo(self, valores):
         if valores == None:
             self.__tela_cadastro_insumo.close()
@@ -75,15 +81,6 @@ class ControladorInsumo:
             lista_auxiliar.append(values.calorias_por_unidade)
             lista_insumo.append(lista_auxiliar)
         return lista_insumo
-    
-    def listar_insumos(self):
-        """Retorna uma lista com todos os objetos do tipo Insumo cadastrados."""
-        lista_insumos = []
-        
-        for insumo in self.__insumo_dao.get_all():
-            lista_insumos.append(insumo)
-        
-        return lista_insumos
 
     def abre_tela(self):
         while True:

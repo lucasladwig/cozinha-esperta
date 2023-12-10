@@ -12,7 +12,8 @@ class TelaCadastroReceita:
     def __init__(self):
         self.__window = None
 
-    def init_components(self, dados_receita: dict, dados_itens: list):
+    def definir_layout(self, dados_receita: dict, dados_itens_receita: list):
+        """Cria o layout da tela."""
         if dados_receita is None:
             dados_receita = {}
 
@@ -62,7 +63,7 @@ class TelaCadastroReceita:
         ]
 
         itens = [
-            [sg.Table(values=dados_itens,
+            [sg.Table(values=dados_itens_receita,
                       headings=["Insumo",
                                 "Un.",
                                 "Qtd. Bruta",
@@ -97,15 +98,66 @@ class TelaCadastroReceita:
                 f"Calorias por Porção: {dados_receita.get('calorias_porcao', 0):.0f} kcal", tooltip="Calorias (kcal) por porção")],
             [sg.Push(), sg.Button("Cancelar"), sg.Button("Salvar")]
         ]
+        return layout
 
-        self.__window = sg.Window("Insumos", layout, resizable=True)
+    def abrir_tela(self, dados_receita: dict, dados_itens_receita: list):
+        """Inicializa a tela com o layout definido e os campos preenchidos com os dados passados."""
+        layout = self.definir_layout(dados_receita, dados_itens_receita)
+        self.__window = sg.Window(
+            "Gerenciador de Receitas", layout, resizable=True)
+        evento, valores = self.__window.read()
 
-    def open(self, dados_receita: dict, dados_itens: list):
-        self.init_components(dados_receita, dados_itens)
-        botao, valores = self.__window.read()
-        return botao, valores
+        linha = valores["tabela_itens_receita"]
+        if linha:
+            nome_insumo_selecionado = self.__window.find_element(
+                "tabela_itens_receita").get()[linha[0]][0]
+        else:
+            nome_insumo_selecionado = None
 
-    def close(self):
+        nome = valores['nome'].strip()
+        codigo = valores['codigo'].strip()
+        descricao = valores['descricao'].strip()
+        modo_preparo = valores['modo_preparo'].strip()
+
+        if (nome == "" or codigo == "") and evento == "Salvar":
+            self.mostrar_mensagem(
+                "Nome e código não podem ser vazios!", titulo="Erro")
+            self.fechar_tela()
+            return evento, None
+        
+        if evento == "Cancelar":
+            return evento, None
+
+        try: 
+            rendimento_porcoes = int(valores['rendimento_porcoes'])
+            validade = int(valores['validade'])
+            tempo_preparo = int(valores['tempo_preparo'])        
+        except ValueError:            
+            self.mostrar_mensagem(
+                "Rendimento, validade e tempo de preparo devem ser números inteiros!", titulo="Erro")
+            self.fechar_tela()
+            return evento, None
+        
+        if rendimento_porcoes < 1 or validade < 0 or tempo_preparo < 1:
+            self.mostrar_mensagem(
+                "Rendimento e tempo de preparo devem ser números inteiros maiores que 0!", titulo="Erro")
+            self.fechar_tela()
+            return evento, None
+
+        valores_receita = {
+            'nome': nome,
+            'codigo': codigo,
+            'descricao': descricao,
+            'modo_preparo': modo_preparo,
+            'rendimento_porcoes': rendimento_porcoes,
+            'validade': validade,
+            'tempo_preparo': tempo_preparo,
+            'nome_insumo_selecionado': nome_insumo_selecionado,
+        }
+
+        return evento, valores_receita
+
+    def fechar_tela(self):
         self.__window.close()
 
     # MOSTRAR MENSAGENS
@@ -121,28 +173,3 @@ class TelaCadastroReceita:
         escolha, _ = sg.Window("Confirmar exclusão",
                                layout, disable_close=True).read(close=True)
         return escolha
-
-    # TRATAR DADOS
-    # def __tratar_valores(self, valores_receita: dict) -> dict:
-    #     valores_tratados = valores_receita
-
-    #     try:
-    #         valores_tratados['rendimento_porcoes'] = int(
-    #             valores_tratados['rendimento_porcoes'])
-    #         valores_tratados['tempo_preparo'] = int(
-    #             valores_tratados['tempo_preparo'])
-    #         valores_tratados['validade'] = int(valores_tratados['validade'])
-
-    #         if (valores_tratados['rendimento_porcoes'] < 1
-    #             or valores_tratados['tempo_preparo'] < 1
-    #                 or valores_tratados['validade'] < 1):
-    #             raise ValueError
-
-    #         return valores_tratados
-
-    #     except TypeError:
-    #         self.mostrar_mensagem("Insira um número inteiro!", titulo="Erro!")
-
-    #     except ValueError:
-    #         self.mostrar_mensagem(
-    #             "Insira um número maior que zero!", titulo="Erro!")

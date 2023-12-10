@@ -7,15 +7,16 @@ class Receita():
 
     # ATRIBUTOS
     def __init__(self,
-                 codigo: str,
-                 nome: str,
-                 custo_fixo: float,
+                 codigo: str = "",
+                 nome: str = "",
                  descricao: str = "",
                  rendimento_porcoes: int = 1,
-                 tempo_preparo: int = 0,
-                 validade: int = 0,
+                 tempo_preparo: int = 1,
+                 validade: int = 1,
                  modo_preparo: str = "",
+                 custo_fixo: float = 0.0,
                  ) -> None:
+
         self.__codigo = codigo
         self.__nome = nome
         self.__descricao = descricao
@@ -24,8 +25,10 @@ class Receita():
         self.__validade = validade
         self.__modo_preparo = modo_preparo
         self.__custo_fixo = custo_fixo
+
+        # Lista de itens de receita
         self.__itens = []
-        
+
         # Atributos calculados
         self.__calorias_porcao = 0
         self.__custo_total = 0.0
@@ -72,11 +75,11 @@ class Receita():
         if isinstance(rendimento_porcoes, int):
             if rendimento_porcoes > 0:
                 self.__rendimento_porcoes = rendimento_porcoes
-            else: 
-                raise ValueError("Rendimento deve ser valor inteiro maior que zero!")
+            else:
+                raise ValueError(
+                    "Rendimento deve ser valor inteiro maior que zero!")
         else:
             raise TypeError("Rendimento deve ser um número inteiro!")
-        
 
     @property
     def tempo_preparo(self) -> int:
@@ -85,10 +88,11 @@ class Receita():
     @tempo_preparo.setter
     def tempo_preparo(self, tempo_preparo: int) -> None:
         if isinstance(tempo_preparo, int):
-            if tempo_preparo >= 0:
+            if tempo_preparo > 0:
                 self.__tempo_preparo = tempo_preparo
-            else: 
-                raise ValueError("Tempo de preparo deve ser valor inteiro maior que zero!")
+            else:
+                raise ValueError(
+                    "Tempo de preparo deve ser valor inteiro maior que zero!")
         else:
             raise TypeError("Tempo de preparo deve ser um número inteiro!")
 
@@ -101,8 +105,9 @@ class Receita():
         if isinstance(validade, int):
             if validade >= 0:
                 self.__validade = validade
-            else: 
-                raise ValueError("Validade deve ser valor inteiro maior que zero!")
+            else:
+                raise ValueError(
+                    "Validade deve ser valor inteiro maior que zero!")
         else:
             raise TypeError("Validade deve ser um número inteiro!")
 
@@ -127,40 +132,40 @@ class Receita():
             self.__atualizar_calorias()
             self.__atualizar_custos()
 
-    # Calorias e Custos - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
+    # Calorias e Custos - TALVEZ NÃO PRECISE SETTERS, NÃO DEVE SER EDITADO DIRETAMENTE
     @property
     def calorias_porcao(self) -> int:
         return self.__calorias_porcao
 
-    # @calorias_porcao.setter
-    # def calorias_porcao(self, calorias_porcao: int) -> None:
-    #     if isinstance(calorias_porcao, int):
-    #         self.__calorias_porcao = calorias_porcao
+    @calorias_porcao.setter
+    def calorias_porcao(self, calorias_porcao: int) -> None:
+        if isinstance(calorias_porcao, int):
+            self.__calorias_porcao = calorias_porcao
 
     @property
     def custo_total(self) -> float:
         return self.__custo_total
 
-    # @custo_total.setter
-    # def custo_total(self, custo_total: float) -> None:
-    #     if isinstance(custo_total, float):
-    #         self.__custo_total = custo_total
+    @custo_total.setter
+    def custo_total(self, custo_total: float) -> None:
+        if isinstance(custo_total, float):
+            self.__custo_total = custo_total
 
     @property
     def custo_porcao(self) -> float:
         return self.__custo_porcao
 
-    # @custo_porcao.setter
-    # def custo_porcao(self, custo_porcao: float) -> None:
-    #     if isinstance(custo_porcao, float):
-    #         self.__custo_porcao = custo_porcao
+    @custo_porcao.setter
+    def custo_porcao(self, custo_porcao: float) -> None:
+        if isinstance(custo_porcao, float):
+            self.__custo_porcao = custo_porcao
 
     @property
     def custo_fixo(self) -> float:
         return self.__custo_fixo
 
     # CRUD
-    def incluir_item_em_receita(self, item_novo: ItemDeReceita) -> None:
+    def adicionar_item_de_receita(self, item_novo: ItemDeReceita) -> None:
         if isinstance(item_novo, ItemDeReceita):
             if self.__buscar_item_por_insumo(item_novo.insumo) is None:
                 self.__itens.append(item_novo)
@@ -171,6 +176,17 @@ class Receita():
         else:
             raise TypeError("Parâmetro não é do tipo item de receita!")
 
+    def substituir_item_de_receita(self, item_novo: ItemDeReceita, item_antigo: ItemDeReceita) -> None:
+        if isinstance(item_novo, ItemDeReceita) and isinstance(item_antigo, ItemDeReceita):
+            if self.__buscar_item_por_insumo(item_novo.insumo) is None:
+                self.__itens.remove(item_antigo)
+                self.__itens.append(item_novo)
+                self.__atualizar_calorias()
+                self.__atualizar_custos()
+
+        else:
+            raise TypeError("Entidade não é do tipo item de receita!")
+
     def excluir_item_de_receita(self, item: ItemDeReceita) -> None:
         if isinstance(item, ItemDeReceita):
             self.__itens.remove(item)
@@ -179,58 +195,7 @@ class Receita():
         else:
             raise TypeError("Parâmetro não é do tipo insumo!")
 
-    def alterar_insumo(self, insumo_antigo: Insumo, insumo_novo: Insumo) -> None:
-        if isinstance(insumo_novo, Insumo) and isinstance(insumo_antigo, Insumo):
-            item = self.__buscar_item_por_insumo(insumo_antigo)
-            if item is None or self.__buscar_item_por_insumo(insumo_novo) is not None:
-                raise ValueError
-            item.insumo = insumo_novo
-            self.__atualizar_calorias()
-            self.__atualizar_custos()
-        else:
-            raise TypeError("Parâmetro não é do tipo insumo!")
-
-    def alterar_quantidade(self, insumo: Insumo, quantidade: float) -> None:
-        if isinstance(insumo, Insumo) and isinstance(quantidade, float):
-            item = self.__buscar_item_por_insumo(insumo)
-            if item is None:
-                raise ValueError
-            if item.calcula_por_qtd_bruta:
-                item.qtd_bruta = quantidade
-            else:
-                item.qtd_limpa = quantidade
-            self.__atualizar_calorias()
-            self.__atualizar_custos()
-        else:
-            raise TypeError("Parâmetro não é do tipo insumo!")
-
-    def alterar_fator_correcao(self, insumo: Insumo, fator: float) -> None:
-        if isinstance(insumo, Insumo) and isinstance(fator, float):
-            item = self.__buscar_item_por_insumo(insumo)
-            if item is None:
-                raise ValueError
-            if fator > 0:
-                item.fator_correcao = fator
-            else:
-                raise ValueError
-            self.__atualizar_calorias()
-            self.__atualizar_custos()
-        else:
-            raise TypeError("Parâmetro não é do tipo insumo!")
-
-    def alterar_indice_coccao(self, insumo: Insumo, indice: float) -> None:
-        if isinstance(insumo, Insumo) and isinstance(indice, float):
-            item = self.__buscar_item_por_insumo(insumo)
-            if item is None:
-                raise ValueError
-            if indice > 0:
-                item.indice_coccao = indice
-            else:
-                raise ValueError
-        else:
-            raise TypeError("Parâmetro não é do tipo insumo!")
-
-    # MÉTODOS AUXILIARES
+    # MÉTODOS DE BUSCA
     def __buscar_item_por_insumo(self, insumo: Insumo) -> Insumo:
         if isinstance(insumo, Insumo):
             for item in self.__itens:
@@ -239,6 +204,7 @@ class Receita():
         else:
             raise TypeError("Parâmetro não é do tipo insumo!")
 
+    # Talvez desnecessário
     def buscar_item_por_nome_de_insumo(self, nome: str) -> Insumo:
         if isinstance(nome, str):
             for item in self.__itens:
@@ -247,39 +213,20 @@ class Receita():
         else:
             raise TypeError("Parâmetro não é do tipo string!")
 
+    # MÉTODOS DE ATUALIZAÇÃO DE PARÂMETROS
     def __atualizar_custos(self) -> None:
         custo_total = 0
         for item in self.__itens:
             custo_total += item.custo
 
         self.__custo_total = round(custo_total, 2)
-        self.__custo_porcao = round((custo_total / self.__rendimento_porcoes) + self.__custo_fixo, 2)
+        self.__custo_porcao = round(
+            (custo_total / self.__rendimento_porcoes) + self.__custo_fixo, 2)
 
     def __atualizar_calorias(self) -> None:
         calorias_total = 0
         for item in self.__itens:
             calorias_total += item.calorias
 
-        self.__calorias_porcao = round(calorias_total / self.__rendimento_porcoes, 0)
-
-    # MÉTODOS PÚBLICOS
-    def listar_insumos_e_quantidades(self) -> dict:
-        insumos_qtds = {}
-        for item in self.__itens:
-            insumos_qtds.update({item.insumo: item.qtd_bruta})
-        return insumos_qtds
-
-    # def listar_dados_itens(self) -> list:
-    #     itens = []
-    #     for item in self.__itens:
-    #         dados_item = []
-    #         dados_item.append(item.insumo.nome)
-    #         dados_item.append(item.insumo.unidade)
-    #         dados_item.append(item.qtd_bruta)
-    #         dados_item.append(item.fator_correcao)
-    #         dados_item.append(item.qtd_limpa)
-    #         dados_item.append(item.indice_coccao)
-    #         dados_item.append(item.qtd_pronta)
-    #         dados_item.append(item.calorias)
-    #         dados_item.append(item.custo)
-    #     return itens
+        self.__calorias_porcao = round(
+            calorias_total / self.__rendimento_porcoes, 0)

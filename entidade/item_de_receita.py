@@ -6,7 +6,8 @@ class ItemDeReceita():
 
     # ATRIBUTOS
     def __init__(self, insumo: Insumo) -> None:
-        self.__insumo = insumo
+        if isinstance(insumo, Insumo):
+            self.__insumo = insumo
         self.__fator_correcao = 1.0
         self.__indice_coccao = 1.0
         self.__calcula_por_qtd_bruta = True # Atualizar no diagrama de classe
@@ -15,6 +16,15 @@ class ItemDeReceita():
         self.__qtd_pronta = 0.0             # Atualizar no diagrama de classe
         self.__calorias = 0
         self.__custo = 0.0
+
+        # Atualiza parâmetros calculados na inicialização do objeto
+        if self.calcula_por_qtd_bruta:
+            self.__atualizar_qtd_limpa()
+        else:
+            self.__atualizar_qtd_bruta()
+        self.__atualizar_qtd_pronta()
+        self.__atualizar_calorias()
+        self.__atualizar_custo()
 
     # GETTERS / SETTERS
     # Ingrediente
@@ -87,7 +97,9 @@ class ItemDeReceita():
     def qtd_limpa(self, qtd_limpa: float) -> None:
         if isinstance(qtd_limpa, float) and qtd_limpa > 0:
             self.__qtd_limpa = qtd_limpa
+            self.__atualizar_qtd_bruta()
             self.__atualizar_qtd_pronta()
+            self.__atualizar_custo()
             self.__atualizar_calorias()
 
     @property
@@ -99,24 +111,24 @@ class ItemDeReceita():
         if isinstance(qtd_pronta, float) and qtd_pronta > 0:
             self.__qtd_pronta = qtd_pronta
 
-    # Custos e calorias - TALVEZ NÃO PRECISE SETTERS, NÃO PODE SER EDITADO DIRETAMENTE
+    # Custos e calorias - TALVEZ NÃO PRECISE SETTERS, NÃO DEVE SER EDITADO DIRETAMENTE
     @property
     def calorias(self) -> float:
         return self.__calorias
 
-    # @calorias.setter
-    # def calorias(self, calorias: float) -> None:
-    #     if isinstance(calorias, float) and calorias >= 0:
-    #         self.__calorias = calorias
+    @calorias.setter
+    def calorias(self, calorias: float) -> None:
+        if isinstance(calorias, float) and calorias >= 0:
+            self.__calorias = calorias
 
     @property
     def custo(self) -> float:
         return self.__custo
 
-    # @custo.setter
-    # def custo(self, custo: float) -> None:
-    #     if isinstance(custo, float) and custo >= 0:
-    #         self.__custo = custo
+    @custo.setter
+    def custo(self, custo: float) -> None:
+        if isinstance(custo, float) and custo >= 0:
+            self.__custo = custo
 
     # MÉTODOS AUXILIARES
     def __atualizar_qtd_bruta(self) -> None:

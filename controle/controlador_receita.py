@@ -13,13 +13,13 @@ class ControladorReceita:
     """Controlador de Receitas e Itens de Receita."""
 
     # Constantes de classe
-    __DADOS_BASE_RECEITA = {
+    __DADOS_NOVA_RECEITA = {
         "codigo": "",
         "nome": "",
         "descricao": "",
         "rendimento_porcoes": 1,
         "tempo_preparo": 1,
-        "validade": 1,
+        "validade": 0,
         "modo_preparo": "",
         "itens": [],
         "calorias_porcao": 0,
@@ -27,11 +27,10 @@ class ControladorReceita:
         "custo_porcao": 0.0,
     }
 
-    __DADOS_BASE_ITEM_RECEITA = {
-        "insumo": None,
-        "unidade": "kg",
-        "qtd_bruta": 0.0,
-        "qtd_limpa": 0.0,
+    __DADOS_NOVO_ITEM_RECEITA = {
+        "nome_insumo": None,
+        "qtd_bruta": 1.0,
+        "qtd_limpa": 1.0,
         "calcula_por_qtd_bruta": True,
         "fator_correcao": 1.0,
         "indice_coccao": 1.0,
@@ -41,219 +40,191 @@ class ControladorReceita:
         # self.__controlador_sistema = None
         self.__controlador_insumos = ControladorInsumo()
         self.__controlador_custos_fixos = ControladorCustosFixos()
-        self.__dao = ReceitaDAO()
+        self.__receita_dao = ReceitaDAO()
         self.__tela_gerenciador_receitas = TelaGerenciadorReceitas()
         self.__tela_cadastro_receita = TelaCadastroReceita()
         self.__tela_cadastro_item_receita = TelaCadastroItemDeReceita()
 
+        # Disponibiliza a lista de insumos para todos os métodos
+        self.__insumos_cadastrados = self.__listar_insumos()
+
     # GETTERS/SETTERS
 
-   # TELAS
-    def abrir_tela(self) -> None:
-        """Abre todas as telas de receitas."""
+    # TELAS
+    def abrir_tela_gerenciador(self) -> None:
+        """Abre a tela inicial do gerenciador de receitas."""
         while True:
-            acao_gerenciador, dados_gerenciador = self.__tela_gerenciador_receitas.open(
-                self.__listar_receitas())
+            acao_gerenciador, dados_gerenciador = self.__tela_gerenciador_receitas.abrir_tela(
+                self.__listar_dados_todas_receitas())
+            self.__tela_gerenciador_receitas.fechar_tela()
 
-            # Carrega lista de insumos do controlador de insumos
-            lista_insumos = self.__listar_insumos()
-
-            match acao_gerenciador:
-                # CRIAR NOVA RECEITA
-                case "Nova Receita...":
-                    self.__tela_gerenciador_receitas.close()
-                    lista_itens = []
-
-                    # Abre janela de cadastro de nova receita com dados em branco
-                    acao_receita, dados_receita = self.__tela_cadastro_receita.open(
-                        ControladorReceita.__DADOS_BASE_RECEITA, [])
-
-                    match acao_receita:
-                        # Adicionar itens de receita
-                        case "Adicionar Item...":
-
-                            # Abre janela de cadastro de itens carregando a lista de insumos já cadastrados
-                            dados_item_novo = self.__tela_cadastro_item_receita.open(
-                                lista_insumos, ControladorReceita.__DADOS_BASE_ITEM_RECEITA)
-
-                            if dados_item_novo is None:
-                                self.__tela_cadastro_item_receita.close()
-
-                            else:
-                                novo_item = self.criar_item_de_receita(
-                                    dados_item_novo)
-                                lista_itens.append(novo_item)
-                                dados_itens = self.__listar_dados_itens(
-                                    lista_itens)
-                                
-                                self.__tela_cadastro_item_receita.close()
-                                
-                                self.__tela_cadastro_receita.close()
-                                self.__tela_cadastro_receita.open(
-                                    dados_receita, dados_itens)
-
-                        # Editar um item de receita
-                        case "Editar Item...":
-
-                            # Verifica se tem uma linha selecionada
-                            if dados_receita["tabela_itens_receita"] == None:
-                                self.__tela_gerenciador_receitas.mostrar_mensagem(
-                                    "Nenhum item selecionado!", titulo="Erro")
-                            else:
-                                item_a_editar = None
-                                for item in lista_itens:
-                                    if item.insumo.nome == dados_receita["tabela_itens_receita"][0]:
-                                        item_a_editar = item
-                                        break
-
-                                # Abre janela de edição de itens carregando a lista de insumos e os valores atuais do item de receita
-                                dados_item = self.__tela_cadastro_item_receita.open(
-                                    lista_insumos, self.__listar_dados_item_receita(item_a_editar))
-
-                                lista_itens.remove(item_a_editar)
-                                novo_item = self.criar_item_de_receita(
-                                    dados_item)
-                                lista_itens.append(novo_item)
-
-                                self.__tela_cadastro_item_receita.close()
-
-                        # Excluir um item de receita
-                        case "Excluir Item...":
-                            if dados_gerenciador["tabela_itens_receita"] == None:
-                                self.__tela_gerenciador_receitas.mostrar_mensagem(
-                                    "Nenhum item selecionado!", titulo="Erro")
-                            else:
-                                confirma, _ = self.__tela_cadastro_receita.confirmar_exclusao()
-                                if confirma:
-                                    item_a_excluir = None
-                                    for item in lista_itens:
-                                        if item.insumo.nome == dados_receita["tabela_itens_receita"][0]:
-                                            item_a_excluir = item
-                                            break
-                                    lista_itens.remove(item_a_excluir)
-                                    self.__tela_cadastro_item_receita.close()
-
-                                else:
-                                    self.__tela_cadastro_item_receita.close()
-
-                        # Salvar nova Receita
-                        case "Salvar":
-                            try:
-                                self.incluir_receita(
-                                    dados_receita, lista_itens)
-                                self.__tela_cadastro_receita.close()
-
-                            except ValueError:
-                                self.__tela_cadastro_receita.mostrar_mensagem(
-                                    "Rendimento, Validade e Tempo de Preparo devem ser números inteiros maiores que zero!")
-                                self.__tela_cadastro_receita.close()
-                                acao_receita, dados_receita = self.__tela_cadastro_receita.open(
-                                    dados_receita, lista_itens)
-
-                        # Cancelar
-                        case "Cancelar":
-                            self.__tela_cadastro_receita.close()
+            if acao_gerenciador == "Nova Receita...":
+                self.abrir_tela_receita(None)
 
                 # EDITAR RECEITA
-                case "Editar Receita...":
-                    if dados_gerenciador["codigo"] == None:
+            elif acao_gerenciador == "Editar Receita...":
+                if dados_gerenciador["codigo"] is None:
+                    self.__tela_gerenciador_receitas.mostrar_mensagem(
+                        "Nenhuma receita selecionada!", titulo="Erro")
+                else:
+                    receita_atual = self.__buscar_receita_por_codigo(
+                        dados_gerenciador["codigo"])
+
+                    self.abrir_tela_receita(receita_atual)
+
+            elif acao_gerenciador == "Excluir Receita...":
+                if dados_gerenciador["codigo"] is None:
+                    self.__tela_gerenciador_receitas.mostrar_mensagem(
+                        "Nenhuma receita selecionada!", titulo="Erro")
+                else:
+                    confirma_exclusao = self.__tela_gerenciador_receitas.confirmar_exclusao()
+                    if confirma_exclusao == "Sim":
+                        self.excluir_receita(dados_gerenciador["codigo"])
                         self.__tela_gerenciador_receitas.mostrar_mensagem(
-                            "Nenhuma receita selecionada!", titulo="Erro")
-                    else:
-                        lista_itens = []
-                        receita_atual = self.__buscar_receita_por_codigo(
-                            dados_gerenciador["codigo"])
-                        dados_receita_atual = self.__listar_dados_receita(
-                            receita_atual)
-                        dados_itens_receita_atual = receita_atual.listar_dados_itens()
-
-                        acao_receita, dados_receita = self.__tela_cadastro_receita.open(
-                            dados_receita_atual, dados_itens_receita_atual)
-
-                        # Adicionar itens de receita
-                        if acao_receita == "Adicionar Item...":
-                            self.__tela_cadastro_receita.close()
-
-                            # Abre janela de cadastro de itens carregando a lista de insumos já cadastrados
-                            dados_item = self.__tela_cadastro_item_receita.open(
-                                lista_insumos, ControladorReceita.__DADOS_BASE_ITEM_RECEITA)
-
-                            novo_item = self.criar_item_de_receita(dados_item)
-                            receita_atual.incluir_item_em_receita(novo_item)
-
-                            self.__tela_cadastro_item_receita.close()
-
-                        # Editar um item de receita
-                        elif acao_receita == "Editar Item...":
-                            self.__tela_cadastro_receita.close()
-
-                            # Verifica se tem uma linha selecionada
-                            if dados_receita["tabela_itens_receita"] == None:
-                                self.__tela_gerenciador_receitas.mostrar_mensagem(
-                                    "Nenhum item selecionado!", titulo="Erro")
-                            else:
-                                item_a_editar = receita_atual.buscar_item_por_nome_de_insumo(
-                                    dados_receita["tabela_itens_receita"][0])
-
-                                # Abre janela de edição de itens carregando a lista de insumos e os valores atuais do item de receita
-                                dados_item = self.__tela_cadastro_item_receita.open(
-                                    lista_insumos, self.__listar_dados_item_receita(item_a_editar))
-
-                                item_a_editar = self.alterar_item_de_receita(
-                                    item_a_editar, dados_item)
-
-                                self.__tela_cadastro_item_receita.close()
-
-                        # Excluir um item de receita
-                        elif acao_receita == "Excluir Item...":
-                            if dados_gerenciador["tabela_itens_receita"] == None:
-                                self.__tela_gerenciador_receitas.mostrar_mensagem(
-                                    "Nenhum item selecionado!", titulo="Erro")
-                            else:
-                                confirma, _ = self.__tela_cadastro_receita.confirmar_exclusao()
-                                if confirma:
-                                    item_a_excluir = receita_atual.buscar_item_por_nome_de_insumo(
-                                        dados_receita["tabela_itens_receita"][0])
-                                    receita_atual.excluir_item_de_receita(
-                                        item_a_excluir)
-                                    self.__tela_cadastro_item_receita.close()
-
-                                else:
-                                    self.__tela_cadastro_item_receita.close()
-
-                        # Salvar nova Receita
-                        elif acao_receita == "Salvar":
-                            self.alterar_receita(dados_receita)
-
-                            self.__tela_cadastro_receita.close()
-
-                        # Cancelar
-                        elif acao_receita in ("Cancelar", "WIN_CLOSE"):
-                            self.__tela_cadastro_receita.close()
-
-                            self.alterar_receita(dados_receita)
-
-                case "Excluir Receita...":
-                    if dados_gerenciador["codigo"] == None:
-                        self.__tela_gerenciador_receitas.mostrar_mensagem(
-                            "Nenhuma receita selecionada!", titulo="Erro")
-                    else:
-                        confirma_exclusao = self.__tela_gerenciador_receitas.confirmar_exclusao()
-                        if confirma_exclusao == "Sim":
-                            self.excluir_receita(dados_gerenciador["codigo"])
-                            self.__tela_gerenciador_receitas.mostrar_mensagem(
-                                "Receita excluída com sucesso!", titulo="Receita excluída")
-                        elif confirma_exclusao == "Não":
-                            pass
-
+                            "Receita excluída com sucesso!", titulo="Receita excluída")
+                    elif confirma_exclusao == "Não":
+                        pass
                 #
-                case "Voltar":
-                    self.__tela_gerenciador_receitas.close()
+            elif acao_gerenciador == "Voltar":
+                self.__tela_gerenciador_receitas.fechar_tela()
+                break
+
+            # Fecha a tela para atualizar com novos valores
+            self.__tela_gerenciador_receitas.fechar_tela()
+
+    # Verificar tipo do retorno, se houver
+    def abrir_tela_receita(self, receita: Receita):
+        """Abre a tela de cadastro/edição de uma receita, carregando seus parâmetros e uma lista dos seus itens."""
+
+        # Abre uma tela de cadastro/edição de receita com os dados passados
+        if receita is None:
+            dados_receita_atual = ControladorReceita.__DADOS_NOVA_RECEITA
+            itens_da_receita = []
+            dados_itens_receita_atual = []
+        else:
+            dados_receita_atual = self.__listar_dados_uma_receita(receita)
+            itens_da_receita = receita.itens
+            dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
+                itens_da_receita)
+
+        # Abre tela de cadastro de itens carregando a lista de insumos e parâmetros de um novo item de receita
+        while True:
+            evento_receita, valores_receita = self.__tela_cadastro_receita.abrir_tela(
+                dados_receita_atual, dados_itens_receita_atual)
+
+            # Adicionar item de receita
+            if evento_receita == "Adicionar Item...":
+                valores_item_novo = self.__tela_cadastro_item_receita.abrir_tela(
+                    lista_insumos=self.__insumos_cadastrados,
+                    dados_item=ControladorReceita.__DADOS_NOVO_ITEM_RECEITA
+                )
+                if valores_item_novo is None:
+                    self.__tela_cadastro_item_receita.fechar_tela()
+
+                elif self.__buscar_item_receita_por_nome(itens_da_receita, valores_item_novo['nome_insumo']) is not None:
+                    self.__tela_cadastro_item_receita.mostrar_mensagem(
+                        "Insumo já incluído na receita!", titulo="Erro")
+                    self.__tela_cadastro_item_receita.fechar_tela()
+
+                else:
+                    novo_item = self.criar_item_de_receita(
+                        valores_item_novo)
+                    itens_da_receita.append(novo_item)
+                    self.__tela_cadastro_item_receita.fechar_tela()
+                    self.__tela_cadastro_receita.fechar_tela()
+
+                    dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
+                        itens_da_receita)
+                    
+                    dados_receita_atual = valores_receita
+                    pass
+
+            # Editar um item de receita
+            elif evento_receita == "Editar Item...":
+                # Verifica se tem uma linha selecionada
+                if valores_receita["nome_insumo_selecionado"] is None:
+                    self.__tela_gerenciador_receitas.mostrar_mensagem(
+                        "Nenhum item selecionado!", titulo="Erro")
+                else:
+                    item_a_editar = self.__buscar_item_receita_por_nome(
+                        itens_da_receita, valores_receita['nome_insumo_selecionado'])
+
+                    # Abre janela de edição de itens carregando a lista de insumos e os valores atuais do item de receita
+                    novos_dados_item = self.__tela_cadastro_item_receita.abrir_tela(
+                        self.__insumos_cadastrados,
+                        self.__listar_dados_um_item_receita(item_a_editar))
+
+                    if novos_dados_item is None:
+                        self.__tela_cadastro_item_receita.fechar_tela()
+                        pass
+
+                    # Altera item de receita
+                    self.alterar_item_de_receita(
+                        item_a_editar, novos_dados_item)
+                    
+                    dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
+                        itens_da_receita)                    
+                    dados_receita_atual = valores_receita
+
+                    self.__tela_cadastro_item_receita.fechar_tela()
+
+            # Excluir um item de receita
+            elif evento_receita == "Excluir Item...":
+                if valores_receita["nome_insumo_selecionado"] is None:  # verificar
+                    self.__tela_gerenciador_receitas.mostrar_mensagem(
+                        "Nenhum item selecionado!", titulo="Erro")
+                else:
+                    nome_insumo = valores_receita["nome_insumo_selecionado"]
+                    confirma_exclusao = self.__tela_cadastro_receita.confirmar_exclusao()
+                    if confirma_exclusao == "Sim":
+                        item_a_excluir = None
+                        for item in itens_da_receita:
+                            if item.insumo.nome == nome_insumo:
+                                item_a_excluir = item
+                                break
+                        itens_da_receita.remove(item_a_excluir)
+
+                        dados_itens_receita_atual = self.__listar_dados_todos_itens_receita(
+                        itens_da_receita)                    
+                        dados_receita_atual = valores_receita
+                        self.__tela_cadastro_receita.fechar_tela()
+                        # self.__tela_cadastro_item_receita.fechar_tela()
+
+                    else:
+                        self.__tela_cadastro_item_receita.fechar_tela()
+
+            else:
+                # Salvar nova Receita
+                if evento_receita == "Salvar":
+                    if valores_receita is None:
+                        self.__tela_cadastro_receita.fechar_tela()
+                        evento_receita, valores_receita = self.__tela_cadastro_receita.abrir_tela(
+                            ControladorReceita.__DADOS_NOVA_RECEITA, [])
+                        itens_da_receita = []
+                        # continue
+
+                    if receita is None:
+                        self.incluir_receita(
+                            valores_receita, itens_da_receita)
+                    else:
+                        self.alterar_receita(
+                            receita, valores_receita, itens_da_receita)
+                    self.__tela_cadastro_receita.mostrar_mensagem(
+                        "Receita salva com sucesso!", titulo="Sucesso")
+                    self.__tela_cadastro_receita.fechar_tela()
                     break
 
-            # Atualiza tela com novos valores
-            self.__tela_gerenciador_receitas.close()
-            self.__tela_gerenciador_receitas.init_components()
+                # Cancelar
+                elif evento_receita == "Cancelar":
+                    self.__tela_cadastro_receita.fechar_tela()
+                    break
+
+                self.__tela_cadastro_receita.fechar_tela()
+                # break
+            
+
+
+        return evento_receita, valores_receita
 
     # CRUD RECEITAS
     def incluir_receita(self, dados_receita: dict, lista_itens: list) -> None:
@@ -287,42 +258,41 @@ class ControladorReceita:
         nova_receita.itens = lista_itens
 
         # Persistir receita
-        self.__dao.add(nova_receita)
+        self.__receita_dao.add(nova_receita)
 
-    def alterar_receita(self, dados_receita: dict) -> None:
+    def alterar_receita(self, receita: Receita, dados_receita: dict, lista_itens: list) -> None:
         """Altera dados de uma receita."""
-        if dados_receita is None:
-            self.__tela_cadastro_receita.close()
-        else:
-            # Busca receita a editar
-            receita = self.__buscar_receita_por_codigo(dados_receita["codigo"])
 
-            # Testa se novo nome já existe
-            if dados_receita["nome"] != receita.nome:
-                if self.__buscar_receita_por_nome(dados_receita["nome"]) is None:
-                    receita.nome = dados_receita["nome"]
-                else:
-                    self.__tela_cadastro_receita.mostrar_mensagem(
-                        f"Receita com este nome já existe!", titulo="Erro")
-                    return
+        # Busca receita a editar
+        receita_a_editar = receita
 
-            # Atualiza parâmetros
-            receita.descricao = dados_receita["descricao"]
-            receita.rendimento_porcoes = dados_receita["rendimento_porcoes"]
-            receita.tempo_preparo = dados_receita["tempo_preparo"]
-            receita.validade = dados_receita["validade"]
-            receita.modo_preparo = dados_receita["modo_preparo"]
+        # Testa se novo nome já existe
+        if dados_receita["nome"] != receita.nome:
+            if self.__buscar_receita_por_nome(dados_receita["nome"]) is None:
+                receita_a_editar.nome = dados_receita["nome"]
+            else:
+                self.__tela_cadastro_receita.mostrar_mensagem(
+                    f"Receita com este nome já existe!", titulo="Erro")
+                return
 
-            # Persistir receita
-            self.__dao.add(receita)
+        # Atualiza parâmetros
+        receita_a_editar.descricao = dados_receita["descricao"]
+        receita_a_editar.rendimento_porcoes = dados_receita["rendimento_porcoes"]
+        receita_a_editar.tempo_preparo = dados_receita["tempo_preparo"]
+        receita_a_editar.validade = dados_receita["validade"]
+        receita_a_editar.modo_preparo = dados_receita["modo_preparo"]
+        receita_a_editar.itens = lista_itens
+
+        # Persistir receita
+        self.__receita_dao.add(receita_a_editar)
 
     def excluir_receita(self, codigo: str) -> None:
         if self.__buscar_receita_por_codigo(codigo) is None:
             raise ValueError("Receita não existe!")
-        self.__dao.remove(codigo)
+        self.__receita_dao.remove(codigo)
 
-    # CRUD ITEMS RECEITAS
-    def criar_item_de_receita(self, dados_item_receita: dict) -> None:
+    # CRUD ITENS RECEITAS
+    def criar_item_de_receita(self, dados_item_receita: dict) -> ItemDeReceita:
         """Insere um item em uma receita existente."""
 
         # Instancia novo item
@@ -330,18 +300,15 @@ class ControladorReceita:
             dados_item_receita["nome_insumo"])
         novo_item = ItemDeReceita(insumo)
 
-        novo_qtd = float(dados_item_receita["qtd"])
-        novo_FC = float(dados_item_receita["fator_correcao"])
-        novo_IC = float(dados_item_receita["indice_coccao"])
+        novo_item.fator_correcao = dados_item_receita["fator_correcao"]
+        novo_item.indice_coccao = dados_item_receita["indice_coccao"]
+        novo_item.calcula_por_qtd_bruta = dados_item_receita["calcula_por_qtd_bruta"]
 
-        novo_item.fator_correcao = novo_FC
-        novo_item.indice_coccao = novo_IC
-
-        # Atualiza novo item com os dados inseridos
-        if dados_item_receita["bruta"]:
-            novo_item.qtd_bruta = novo_qtd
-        elif dados_item_receita["limpa"]:
-            novo_item.qtd_limpa = novo_qtd
+        # Atualiza quantidade
+        if novo_item.calcula_por_qtd_bruta:
+            novo_item.qtd_bruta = dados_item_receita["quantidade"]
+        else:
+            novo_item.qtd_limpa = dados_item_receita["quantidade"]
 
         return novo_item
 
@@ -355,44 +322,41 @@ class ControladorReceita:
                 dados_item_receita["nome_insumo"])
             item_atual.insumo = insumo_novo
 
-        # Atualiza novo item com os dados inseridos
-        if dados_item_receita["bruta"]:
-            item_atual.qtd_bruta = dados_item_receita["qtd"]
-        elif dados_item_receita["limpa"]:
-            item_atual.qtd_limpa = dados_item_receita["qtd"]
-
         item_atual.fator_correcao = dados_item_receita["fator_correcao"]
         item_atual.indice_coccao = dados_item_receita["indice_coccao"]
+        item_atual.calcula_por_qtd_bruta = dados_item_receita["calcula_por_qtd_bruta"]
 
-        return item_atual
+        # Atualiza novo item com os dados inseridos
+        if item_atual.calcula_por_qtd_bruta:
+            item_atual.qtd_bruta = dados_item_receita["quantidade"]
+        else:
+            item_atual.qtd_limpa = dados_item_receita["quantidade"]
 
-    # MÉTODOS AUXILIARES
+    # MÉTODOS DE BUSCA
 
     def __buscar_receita_por_codigo(self, codigo: str) -> Receita:
         if isinstance(codigo, str):
-            for receita in self.__dao.get_all():
+            for receita in self.__receita_dao.get_all():
                 if receita.codigo == codigo:
                     return receita
 
     def __buscar_receita_por_nome(self, nome: str) -> Receita:
         if isinstance(nome, str):
-            for receita in self.__dao.get_all():
+            for receita in self.__receita_dao.get_all():
                 if receita.nome == nome:
                     return receita
 
-    def __listar_receitas(self) -> list:
-        receitas = []
-        for receita in self.__dao.get_all():
-            dados_receita = []
-            dados_receita.append(receita.codigo)
-            dados_receita.append(receita.nome)
-            dados_receita.append(receita.descricao)
-            receitas.append(dados_receita)
-        return receitas
+    def __buscar_item_receita_por_nome(self, lista_itens: list, nome: str) -> ItemDeReceita:
+        if isinstance(nome, str):
+            for item_receita in lista_itens:
+                if item_receita.insumo.nome == nome:
+                    return item_receita
 
-    def __listar_dados_receita(self, receita: Receita) -> dict:
+    # MÉTODOS DE LISTAGEM DE DADOS PARA TELAS
+    def __listar_dados_uma_receita(self, receita: Receita) -> dict:
+        """Retorna todos os atributos de uma receita para serem exibidos em tela."""
         if receita is None:
-            dados_receita = ControladorReceita.__DADOS_BASE_RECEITA
+            dados_receita = ControladorReceita.__DADOS_NOVA_RECEITA
         else:
             dados_receita = {
                 "codigo": receita.codigo,
@@ -402,35 +366,31 @@ class ControladorReceita:
                 "tempo_preparo": receita.tempo_preparo,
                 "validade": receita.validade,
                 "modo_preparo": receita.modo_preparo,
-                "itens": receita.listar_dados_itens(),
+                "itens": self.__listar_dados_todos_itens_receita(receita.itens),
                 "calorias_porcao": receita.calorias_porcao,
                 "custo_total": receita.custo_total,
                 "custo_porcao": receita.custo_porcao,
             }
         return dados_receita
 
-    # def __listar_itens_de_receitas(self, receita: Receita) -> list:
-    #     itens = []
-    #     for item in receita.itens:
-    #         dados_item = []
-    #         dados_item.append(item.insumo.nome)
-    #         dados_item.append(item.insumo.unidade)
-    #         dados_item.append(item.qtd_bruta)
-    #         dados_item.append(item.fator_correcao)
-    #         dados_item.append(item.qtd_limpa)
-    #         dados_item.append(item.indice_coccao)
-    #         dados_item.append(item.qtd_pronta)
-    #         dados_item.append(item.calorias)
-    #         dados_item.append(item.custo)
-    #         itens.append(dados_item)
-    #     return itens
+    def __listar_dados_todas_receitas(self) -> list:
+        """Retorna código, nome e descrição de uma receita para serem exibidos em tela (em formato de tabela)."""
+        receitas = []
+        for receita in self.__receita_dao.get_all():
+            dados_receita = []
+            dados_receita.append(receita.codigo)
+            dados_receita.append(receita.nome)
+            dados_receita.append(receita.descricao)
+            receitas.append(dados_receita)
+        return receitas
 
-    def __listar_dados_item_receita(self, item_receita: ItemDeReceita) -> dict:
+    def __listar_dados_um_item_receita(self, item_receita: ItemDeReceita) -> dict:
+        """Retorna os atributos editáveis de um item de receita para serem exibidos em tela."""
         if item_receita is None:
-            dados_item_receita = ControladorReceita.__DADOS_BASE_ITEM_RECEITA
+            dados_item_receita = ControladorReceita.__DADOS_NOVO_ITEM_RECEITA
         else:
             dados_item_receita = {
-                "insumo": item_receita.insumo.nome,
+                "nome_insumo": item_receita.insumo.nome,
                 "qtd_bruta": item_receita.qtd_bruta,
                 "qtd_limpa": item_receita.qtd_limpa,
                 "calcula_por_qtd_bruta": item_receita.calcula_por_qtd_bruta,
@@ -439,8 +399,9 @@ class ControladorReceita:
             }
         return dados_item_receita
 
-    def __listar_dados_itens(self, lista_itens: list) -> list:
-        itens = []
+    def __listar_dados_todos_itens_receita(self, lista_itens: list) -> list:
+        """Retorna todos os atributos de todos itens de uma receita para serem exibidos em tela (em formato de tabela)."""
+        dados_todos_itens = []
         for item in lista_itens:
             dados_item = []
             dados_item.append(item.insumo.nome)
@@ -452,15 +413,13 @@ class ControladorReceita:
             dados_item.append(item.qtd_pronta)
             dados_item.append(item.calorias)
             dados_item.append(item.custo)
-            itens.append(dados_item)
-        return itens
+            dados_todos_itens.append(dados_item)
+        return dados_todos_itens
 
     def __listar_insumos(self) -> list:
-        """Retorna uma lista ordenada dos nomes dos insumos cadastrados."""
-        lista_insumos = self.__controlador_insumos.listar_insumos()
-        nomes_insumos = []
+        """Retorna um dicionário ordenado dos nomes dos insumos cadastrados e suas unidades."""
+        lista_insumos = self.__controlador_insumos.insumo_dao.get_all()
+        nomes_insumos = [insumo.nome for insumo in lista_insumos]
+        nomes_insumos.sort()
 
-        for insumo in lista_insumos:
-            nomes_insumos.append(insumo.nome)
-
-        return sorted(nomes_insumos)
+        return nomes_insumos

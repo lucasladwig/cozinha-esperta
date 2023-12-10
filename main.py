@@ -6,7 +6,7 @@ from controle.controlador_receita import ControladorReceita
 
 
 if __name__ == "__main__":
-    ControladorReceita().abrir_tela()
+    ControladorReceita().abrir_tela_gerenciador()
     # ControladorInsumo().abre_tela()
     # ControladorEstoqueInsumo().abre_tela()
 
