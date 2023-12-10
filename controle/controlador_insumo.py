@@ -14,6 +14,12 @@ class ControladorInsumo:
         self.__insumo_dao = InsumoDAO()
         self.__tela_mensagem = TelaMensagem()
 
+    # GETTERS / SETTERS
+    @property
+    def insumo_dao(self):
+        return self.__insumo_dao
+
+    # CRUD Insumos
     def cadastra_insumo(self, valores):
         if valores == None:
             self.__tela_cadastro_insumo.close()
