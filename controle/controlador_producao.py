@@ -5,6 +5,7 @@ from limite.tela_insere_producao import TelaInsereProducao
 from limite.tela_edita_producao import TelaEditaProducao
 from limite.tela_mensagem import TelaMensagem
 from dados.receitas_dict import Receitas
+from persistencia.insumo_dao import InsumoDAO
 
 from datetime import datetime, date
 
@@ -17,6 +18,7 @@ class ControladorProducao:
         self.__tela_insere_producao = TelaInsereProducao()
         self.__tela_edita_producao = TelaEditaProducao()
         self.__tela_mensagem = TelaMensagem()
+        self.__insumo_dao = InsumoDAO()
 
     @property
     def controlador_sistema(self):
@@ -25,6 +27,10 @@ class ControladorProducao:
     @property
     def producao_dao(self):
         return self.__producao_dao
+
+    @property
+    def insumo_dao(self):
+        return self.__insumo_dao
 
     def edita_producao(self, valores, id):
         # self.__tela_estoque_insumo.close()
@@ -139,9 +145,23 @@ class ControladorProducao:
                 "Receita Já Produzida")
             return
         producao.status = True
+
+        itensReceita = producao.receita.itens  # aqui buscamos todos os itens da receita
+        for item in itensReceita:
+            quantidade_insumo = (
+                item.qtd_bruta / producao.receita.rendimento_porcoes) * producao.numero_porcoes
+            if quantidade_insumo > item.insumo.estoque_atual:
+                diferenca = quantidade_insumo - item.insumo.estoque_atual
+                item.insumo.estoque_atual = 0
+
+                self.controlador_sistema.controlador_lista_compras.adicionar_na_lista_de_compras(
+                    {"it_nome": item.insumo.nome, "it_quantidade": diferenca})
+
+            else:
+                item.insumo.estoque_atual -= quantidade_insumo
+
         self.__tela_mensagem.open("Alteração Concluida!")
         return producao
-
         # dispara metodo para efetivar os intens utilizados
 
     def abre_tela(self):
