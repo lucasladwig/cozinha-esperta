@@ -73,8 +73,8 @@ class ControladorSistema():
        return self.__controlador_relatorio_de_custos
 
     @property
-    def controlador_etiquetas(self):
-       return self.__controlador_etiquetas
+    def controlador_etiqueta(self):
+       return self.__controlador_etiqueta
 
     def abrir_tela(self):
         modulos = {
@@ -87,11 +87,17 @@ class ControladorSistema():
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
             "Etiquetas": self.__controlador_etiqueta.abre_tela,
             "Filtrar Receitas": self.controlador_filtro_receitas.abrir_tela,
-            "Sair": self.sair
+            "Encerrar": self.sair
         }
 
         while True:
             modulo_escolhido = self.__tela_sistema.abrir_tela(ControladorSistema.__MODULOS)
+
+            if modulo_escolhido is None:
+                self.__tela_sistema.fechar_tela()
+                continue
+
+            self.__tela_sistema.fechar_tela()
             modulos[modulo_escolhido]()
 
     def inicializar_sistema(self):

@@ -47,7 +47,14 @@ class TelaSistema:
                 "modulos").get()[linha[0]][0]
         else:
             valores["modulos"] = None
+        
+        if botao in ("Encerrar", sg.WIN_CLOSED):
+            self.fechar_tela()
+            return "Encerrar"
 
+        if botao == "Abrir Módulo..." and valores['modulos'] is None:
+            self.mostrar_mensagem("Nenhum módulo selecionado!", titulo="Erro")        
+        
         return valores["modulos"]
 
     def fechar_tela(self):
