@@ -34,7 +34,7 @@ class ControladorSistema():
         # self.__controlador_relatorios_custos = ControladorRelatoriosCustos(self)
         # self.__controlador_etiquetas = ControladorEtiquetas(self)
 
-        self.__tela_sistema = TelaSistema(ControladorSistema.__MODULOS)
+        self.__tela_sistema = TelaSistema()
 
     @property
     def controlador_insumo(self):
@@ -79,14 +79,15 @@ class ControladorSistema():
             # "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
             # "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
             # "Filtrar Receitas": self.controlador_etiqueteas.abrir_tela,
-            "Voltar": self.voltar
+            "Sair": self.sair
         }
 
         while True:
-            modulos[self.tela.inicializar_tela()]()
+            modulo_escolhido = self.__tela_sistema.abrir_tela(ControladorSistema.__MODULOS)
+            modulos[modulo_escolhido]()
 
     def inicializar_sistema(self):
         self.abrir_tela()
 
-    def voltar(self):
+    def sair(self):
         exit(0)

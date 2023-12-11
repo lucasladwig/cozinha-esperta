@@ -2,6 +2,7 @@ from entidade.item_de_receita import ItemDeReceita
 from entidade.receita import Receita
 from entidade.insumo import Insumo
 from persistencia.receita_dao import ReceitaDAO
+# from controle.controlador_sistema import ControladorSistema
 from controle.controlador_insumo import ControladorInsumo
 from controle.controlador_custos_fixos import ControladorCustosFixos
 from limite.tela_gerenciador_receitas import TelaGerenciadorReceitas
@@ -38,8 +39,8 @@ class ControladorReceitas:
 
     def __init__(self, controlador_sistema) -> None:
         self.__controlador_sistema = controlador_sistema
-        self.__controlador_insumos = ControladorInsumo()
-        self.__controlador_custos_fixos = ControladorCustosFixos()
+        # self.__controlador_insumos = ControladorInsumo()
+        # self.__controlador_custos_fixos = ControladorCustosFixos()
         self.__receita_dao = ReceitaDAO()
         self.__tela_gerenciador_receitas = TelaGerenciadorReceitas()
         self.__tela_cadastro_receita = TelaCadastroReceita()
@@ -248,7 +249,7 @@ class ControladorReceitas:
                 "Receita com este código já existe!", titulo="Erro")
 
         novo_nome = dados_receita["nome"]
-        custo_fixo = self.__controlador_custos_fixos.enviar_custo_fixo_porcao()
+        custo_fixo = self.__controlador_sistema.controlador_custos_fixos.enviar_custo_fixo_porcao()
         novo_descricao = dados_receita["descricao"]
         novo_modo = dados_receita["modo_preparo"]
         novo_rendimento = int(dados_receita["rendimento_porcoes"])
@@ -307,7 +308,7 @@ class ControladorReceitas:
         """Insere um item em uma receita existente."""
 
         # Instancia novo item
-        insumo = self.__controlador_insumos.busca_insumo_por_nome(
+        insumo = self.__controlador_sistema.controlador_insumo.busca_insumo_por_nome(
             dados_item_receita["nome_insumo"])
         novo_item = ItemDeReceita(insumo)
 
@@ -329,7 +330,7 @@ class ControladorReceitas:
 
         # Verufica se houve mudança do insumo
         if item_atual.insumo.nome != dados_item_receita["nome_insumo"]:
-            insumo_novo = self.__controlador_insumos.busca_insumo_por_nome(
+            insumo_novo = self.__controlador_sistema.controlador_insumo.busca_insumo_por_nome(
                 dados_item_receita["nome_insumo"])
             item_atual.insumo = insumo_novo
 
@@ -429,7 +430,7 @@ class ControladorReceitas:
 
     def __listar_insumos(self) -> list:
         """Retorna um dicionário ordenado dos nomes dos insumos cadastrados e suas unidades."""
-        lista_insumos = self.__controlador_insumos.insumo_dao.get_all()
+        lista_insumos = self.__controlador_sistema.controlador_insumo.insumo_dao.get_all()
         nomes_insumos = [insumo.nome for insumo in lista_insumos]
         nomes_insumos.sort()
 
