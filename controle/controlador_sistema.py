@@ -5,6 +5,8 @@ from controle.controlador_custos_fixos import ControladorCustosFixos
 from controle.controlador_producao import ControladorProducao
 from controle.controlador_lista_de_compras import ControladorListaDeCompras
 from controle.controlador_etiqueta import ControladorEtiqueta
+from controle.controlador_relatorio_de_custos import ControladorRelatorioDeCustos
+
 
 from limite.tela_sistema import TelaSistema
 
@@ -32,10 +34,10 @@ class ControladorSistema():
         self.__controlador_custos_fixos = ControladorCustosFixos(self)
         self.__controlador_etiqueta = ControladorEtiqueta(self)
         # self.__controlador_filtar_receitas = ControladorFiltrarReceitas(self)
-        # self.__controlador_relatorios_custos = ControladorRelatoriosCustos(self)
+        self.__controlador_relatorio_de_custos = ControladorRelatorioDeCustos(self)
         # self.__controlador_etiquetas = ControladorEtiquetas(self)
 
-        self.__tela_sistema = TelaSistema(ControladorSistema.__MODULOS)
+        self.__tela_sistema = TelaSistema()
 
     @property
     def controlador_insumo(self):
@@ -61,9 +63,9 @@ class ControladorSistema():
     def controlador_custos_fixos(self):
         return self.__controlador_custos_fixos
 
-    # @property
-    # def controlador_relatorios_custos(self):
-    #    return self.__controlador_relatorios_custos
+    @property
+    def controlador_relatorio_de_custos(self):
+       return self.__controlador_relatorio_de_custos
 
     # @property
     # def controlador_etiquetas(self):
@@ -79,16 +81,18 @@ class ControladorSistema():
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
             "Etiquetas": self.__controlador_etiqueta.abre_tela,
             # "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
+            "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
             # "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
             # "Filtrar Receitas": self.controlador_etiqueteas.abrir_tela,
-            "Voltar": self.voltar
+            "Sair": self.sair
         }
 
         while True:
-            modulos[self.tela.inicializar_tela()]()
+            modulo_escolhido = self.__tela_sistema.abrir_tela(ControladorSistema.__MODULOS)
+            modulos[modulo_escolhido]()
 
     def inicializar_sistema(self):
         self.abrir_tela()
 
-    def voltar(self):
+    def sair(self):
         exit(0)

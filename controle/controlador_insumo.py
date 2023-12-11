@@ -29,13 +29,17 @@ class ControladorInsumo:
             self.__tela_cadastro_insumo.close()
             nome = valores["it_nome"]
             unidade = valores["it_unidade"]
-            caloria = int(valores["it_caloria"])
-            if self.busca_insumo_por_nome(nome) == None:
-                self.__insumo_dao.add(Insumo(caloria, None, None, None, nome, unidade))
-                self.__tela_mensagem.open("Insumo cadastrado com sucesso!")
-            else:
-                self.__tela_mensagem.open(
-                    f"Já existe um insumo cadastrado com o nome de {nome}!")
+            try:
+                caloria = int(valores["it_caloria"])
+                if self.busca_insumo_por_nome(nome) == None:
+                    self.__insumo_dao.add(Insumo(caloria, None, None, None, nome, unidade))
+                    self.__tela_mensagem.open("Insumo cadastrado com sucesso!")
+                else:
+                    self.__tela_mensagem.open(
+                        f"Já existe um insumo cadastrado com o nome '{nome}'!")
+            except:
+                self.__tela_mensagem.open("Valor inválido para caloria!")
+            
 
     def edita_insumo(self, valores, nome):
         self.__tela_insumo.close()
@@ -44,16 +48,21 @@ class ControladorInsumo:
         if valores == None:
             self.__tela_cadastro_insumo.close()
         else:
-            if valores["it_caloria"] != insumo.calorias_por_unidade:
-                insumo.calorias_por_unidade = valores["it_caloria"]
-            if valores["it_unidade"] != insumo.unidade:
-                insumo.unidade = valores["it_tipo"]
-            if valores["it_nome"] != insumo.nome:
-                if self.busca_insumo_por_nome(valores["it_nome"]) == None:
-                    insumo.nome = valores["it_nome"]
-                else:
-                    self.__tela_mensagem.open(
-                        f"Já existe um insumo cadastrado com o nome de {valores['it_numero']}")
+            try:
+                caloria = int(valores["it_caloria"])
+                if caloria != insumo.calorias_por_unidade:
+                    insumo.calorias_por_unidade = caloria
+                if valores["it_unidade"] != insumo.unidade:
+                    insumo.unidade = valores["it_unidade"]
+                if valores["it_nome"] != insumo.nome:
+                    if self.busca_insumo_por_nome(valores["it_nome"]) == None:
+                        insumo.nome = valores["it_nome"]
+                    else:
+                        self.__tela_mensagem.open(
+                            f"Já existe um insumo cadastrado com o nome '{valores['it_nome']}'!")
+            except:
+                self.__tela_mensagem.open("Valor inválido para caloria!")
+            
 
     def exclui_insumo(self, nome):
         self.__insumo_dao.remove(nome)
