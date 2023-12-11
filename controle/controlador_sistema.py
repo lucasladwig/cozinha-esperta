@@ -81,7 +81,7 @@ class ControladorSistema():
             "Insumos": self.controlador_insumo.abre_tela,
             "Estoque": self.controlador_estoque_insumo.abre_tela,
             "Receitas": self.controlador_receitas.abrir_tela_gerenciador,
-            "Producoes": self.controlador_producao.abre_tela,
+            "Produções": self.controlador_producao.abre_tela,
             "Lista de Compras": self.controlador_lista_compras.abre_tela,
             "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
