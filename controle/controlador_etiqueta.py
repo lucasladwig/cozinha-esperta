@@ -15,6 +15,10 @@ class ControladorEtiqueta:
         self.__tela_mensagem = TelaMensagem()
         self.__controlador_sistema = controlador_sistema
 
+    @property
+    def producao_dao(self):
+        return self.__producao_dao
+
     def cria_etiqueta(self, valores, id):
         producao = self.busca_producao_por_id(id)
         if valores == None:
@@ -35,8 +39,8 @@ class ControladorEtiqueta:
         if data_formatada.date() < producao.data_producao:
             return self.__tela_mensagem.open("A data da Validade não pode ser menor que a data de produção")
 
-        etiqueta = f"{producao.receita['nome']}\n Fabricacao: {datetime.strftime(producao.data_producao, '%Y-%m-%d')}\n Validade: {datetime.strftime(data_formatada, '%Y-%m-%d')}\n Calorias: {producao.receita['calorias_porcao']}"
-        self.__salva_etiqueta(etiqueta, producao.receita["nome"], producao.id)
+        etiqueta = f"{producao.receita.nome}\n Fabricacao: {datetime.strftime(producao.data_producao, '%Y-%m-%d')}\n Validade: {datetime.strftime(data_formatada, '%Y-%m-%d')}\n Calorias: {producao.receita.calorias_porcao}"
+        self.__salva_etiqueta(etiqueta, producao.receita.nome, producao.id)
         self.__tela_mensagem.open("Criação de etiqueta Concluida!")
 
     def busca_producao_por_id(self, id: str):
@@ -49,21 +53,21 @@ class ControladorEtiqueta:
     def lista_dados_producao(self, id: str):
         lista_objeto_producao = []
         producao = self.busca_producao_por_id(id)
-        lista_objeto_producao.append(producao.receita["nome"].title())
+        lista_objeto_producao.append(producao.receita.nome.title())
         lista_objeto_producao.append(
             producao.data_producao + timedelta(days=15))
         return lista_objeto_producao
 
     def __monta_lista(self):
         lista_producao = []
-        producoes = self.__producao_dao.get_all()
+        producoes = self.producao_dao.get_all()
         try:
             for values in producoes:
                 if not values.status:
                     continue
                 lista_auxiliar = []
                 lista_auxiliar.append(values.id)
-                lista_auxiliar.append(values.receita['nome'])
+                lista_auxiliar.append(values.receita.nome)
                 lista_auxiliar.append(values.custo_total_producao)
                 lista_auxiliar.append(datetime.strftime(
                     values.data_producao, "%Y-%m-%d"))
