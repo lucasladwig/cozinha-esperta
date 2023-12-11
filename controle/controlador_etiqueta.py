@@ -1,25 +1,20 @@
-from entidade.producao import Producao
-from persistencia.producao_dao import ProducaoDAO
-from limite.tela_producao import TelaProducao
-from limite.tela_insere_producao import TelaInsereProducao
-from limite.tela_edita_producao import TelaEditaProducao
-from limite.tela_mensagem import TelaMensagem
-from dados.receitas_dict import Receitas
+from datetime import datetime, timedelta
 
-from datetime import datetime, date
+from limite.tela_mensagem import TelaMensagem
+from limite.tela_etiqueta import TelaEtiqueta
+from persistencia.producao_dao import ProducaoDAO
+from dados.receitas_dict import Receitas
 
 
 class ControladorEtiqueta:
-    def __init__(self, controlador_sistema) -> None:
-        self.__controlador_sistema = controlador_sistema
-        self.__tela_producao = TelaProducao()
-        self.__tela_insere_producao = TelaInsereProducao()
-        self.__tela_edita_producao = TelaEditaProducao()
+    # def __init__(self, controlador_sistema) -> None:
+    def __init__(self) -> None:
+        # self.__controlador_sistema = controlador_sistema
+        self.__producao_dao = ProducaoDAO()
+        self.__tela_etiqueta = TelaEtiqueta()
         self.__tela_mensagem = TelaMensagem()
 
-    def edita_producao(self, valores, id):
-        # self.__tela_estoque_insumo.close()
-        # self.__tela_atualiza_estoque_insumo.close()
+    def cria_etiqueta(self, valores, id):
         producao = self.busca_producao_por_id(id)
         if valores == None:
             return self.__tela_mensagem.open("Nenhuma Produção Selecionada!")
@@ -27,67 +22,23 @@ class ControladorEtiqueta:
         if producao.status == True:
             return self.__tela_mensagem.open("Você não pode alterar uma produção que já foi feita!")
 
-        # botar so o except
-        if valores["it_quantidade"] != str(producao.numero_porcoes):
-            try:
-                numero_porcoes = int(valores["it_quantidade"])
-                if numero_porcoes < 1:
-                    raise ValueError
-                producao.numero_porcoes = numero_porcoes
-            except (ValueError, TypeError):
-                self.__tela_mensagem.open("Caractere Invalido!")
-                return
-
         try:
-            data_producao = (valores["it_data"])
+            data_producao = (valores["it_data_validade"])
             data_formatada = datetime.strptime(
                 data_producao, "%Y-%m-%d %H:%M:%S")
             data_formatada = data_formatada.date()
         except ValueError:
             try:
-                data_producao = (valores["it_data"])
+                data_producao = (valores["it_data_validade"])
                 data_formatada = datetime.strptime(data_producao, "%Y-%m-%d")
             except ValueError:
                 return self.__tela_mensagem.open("Erro na Data")
 
         if data_formatada < datetime.now().date():
             return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
-
-        if data_formatada != producao.data_producao:
-            producao.data_producao = data_formatada.date()
-
-        self.__producao_dao.add(producao=producao)
-        self.__tela_mensagem.open("Alteração Concluida!")
-
-    def cria_producao(self, potencial_producao):
-        # verificação do objeto receita
-        try:
-            quantidade_porcoes = int(potencial_producao.get("it_quantidade"))
-            if quantidade_porcoes < 1:
-                raise ValueError
-        except (ValueError, TypeError):
-            return self.__tela_mensagem.open("Caractere Invalido!")
-
-        try:
-            data_producao = potencial_producao["it_data"]
-            data_formatada = datetime.strptime(
-                data_producao, "%Y-%m-%d %H:%M:%S")
-
-            if data_formatada.date() < datetime.now().date():
-                return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
-
-        except BaseException:
-            return self.__tela_mensagem.open("Erro na Data")
-
-        producao = Producao(receita=potencial_producao["it_receita"],
-                            custo_total_producao=potencial_producao["it_receita"]["custo_porcao"],
-                            numero_porcoes=quantidade_porcoes,
-                            data_producao=data_formatada.date(),
-                            status=False)
-
-        self.__producao_dao.add(producao=producao)
-        self.__tela_mensagem.open("Produção criada com sucesso!")
-        # metodo para pegar os itens utilizados nessa receita
+        etiqueta = f"{producao.receita['nome']}\n Fabricação: {datetime.strftime(producao.data_producao, '%Y-%m-%d')}\n Validade: {datetime.strftime(data_formatada, '%Y-%m-%d')}"
+        self.__salva_etiqueta(etiqueta, producao.receita["nome"], producao.id)
+        self.__tela_mensagem.open("Criação de etiqueta Concluida!")
 
     def busca_producao_por_id(self, id: str):
         for producao in self.__producao_dao.get_all():
@@ -100,8 +51,8 @@ class ControladorEtiqueta:
         lista_objeto_producao = []
         producao = self.busca_producao_por_id(id)
         lista_objeto_producao.append(producao.receita["nome"].title())
-        lista_objeto_producao.append(producao.numero_porcoes)
-        lista_objeto_producao.append(producao.data_producao)
+        lista_objeto_producao.append(
+            producao.data_producao + timedelta(days=15))
         return lista_objeto_producao
 
     def __monta_lista(self):
@@ -109,6 +60,8 @@ class ControladorEtiqueta:
         producoes = self.__producao_dao.get_all()
         try:
             for values in producoes:
+                if not values.status:
+                    continue
                 lista_auxiliar = []
                 lista_auxiliar.append(values.id)
                 lista_auxiliar.append(values.receita['nome'])
@@ -123,40 +76,34 @@ class ControladorEtiqueta:
         except:
             return lista_producao
 
-    def __produz(self, id: str):
-        producao = self.busca_producao_por_id(id)
-        if producao.status:
-            self.__tela_mensagem.open(
-                "Receita Já Produzida")
-            return
-        producao.status = True
-        self.__tela_mensagem.open("Alteração Concluida!")
-        return producao
+    def __salva_etiqueta(self, etiqueta, nome, id_producao):
+        # texto
+        dados = etiqueta
+        # nome do arquivo
+        nome_arquivo = f"{nome}_{id_producao}.txt"
+        # diretorio
+        diretorio = 'etiquetas'
+        # caminho completo
+        caminho_completo = f"{diretorio}/{nome_arquivo}"
+        # tipo de manipulaçao do arquivo
+        modo_abertura = "w"
 
-        # dispara metodo para efetivar os intens utilizados
+        with open(caminho_completo, modo_abertura) as arquivo:
+            arquivo.write(dados)
 
     def abre_tela(self):
         while True:
-            botao, valores = self.__tela_producao.open(self.__monta_lista())
-            self.__tela_producao.close()
+            botao, valores = self.__tela_etiqueta.open(self.__monta_lista())
+            self.__tela_etiqueta.close()
 
-            if botao == "Nova Produção":
-                receitas = Receitas
-                informacoes = self.__tela_insere_producao.open(
-                    lista=None, receitas=receitas)
-                if informacoes:
-                    self.cria_producao(informacoes)
-
-                self.__tela_insere_producao.close()
-
-            elif botao == "Editar Produção":
+            if botao == "Gerar Etiqueta":
                 if valores["id"] == None:
                     self.__tela_mensagem.open(
                         "Não foi selecionado nenhuma linha!")
                 else:
-                    informacoes = self.__tela_edita_producao.open(
-                        self.lista_dados_producao(valores["id"]))
-                    self.edita_producao(informacoes, valores["id"])
+                    producao = self.lista_dados_producao(valores["id"])
+                    informacoes = self.__tela_edita_producao.open(producao)
+                    self.cria_etiqueta(informacoes, valores["id"])
                     self.__tela_edita_producao.close()
 
             elif botao == "Produzir":
@@ -178,7 +125,7 @@ class ControladorEtiqueta:
                     # metodo para liberar os intens
 
             elif botao == "Voltar":
-                self.__tela_producao.close()
+                self.__tela_etiqueta.close()
                 break
 
         self.__tela_producao.close()
