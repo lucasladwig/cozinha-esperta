@@ -10,7 +10,8 @@ from datetime import datetime, date
 
 
 class ControladorProducao:
-    def __init__(self) -> None:
+    def __init__(self, controlador_sistema) -> None:
+        self.__controlador_sistema = controlador_sistema
         self.__producao_dao = ProducaoDAO()
         self.__tela_producao = TelaProducao()
         self.__tela_insere_producao = TelaInsereProducao()

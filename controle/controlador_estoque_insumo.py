@@ -7,7 +7,8 @@ from limite.tela_mensagem import TelaMensagem
 
 
 class ControladorEstoqueInsumo:
-    def __init__(self) -> None:
+    def __init__(self, controlador_sistema) -> None:
+        self.__controlador_sistema = controlador_sistema
         self.__insumo_dao = InsumoDAO()
         self.__tela_estoque_insumo = TelaEstoqueInsumo()
         self.__tela_atualiza_estoque_insumo = TelaAtualizaEstoqueInsumo()

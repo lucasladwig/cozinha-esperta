@@ -8,7 +8,8 @@ from persistencia.insumo_dao import InsumoDAO
 class ControladorInsumo:
     lista_inicial = [None, None, None]
 
-    def __init__(self) -> None:
+    def __init__(self, controlador_sistema) -> None:
+        self.__controlador_sistema = controlador_sistema
         self.__tela_insumo = TelaInsumo()
         self.__tela_cadastro_insumo = TelaCadastroInsumo()
         self.__insumo_dao = InsumoDAO()

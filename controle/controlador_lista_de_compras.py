@@ -7,7 +7,8 @@ from persistencia.lista_de_compras_dao import ListaDeComprasDAO
 
 
 class ControladorListaDeCompras:
-    def __init__(self) -> None:
+    def __init__(self, controlador_sistema) -> None:
+        self.__controlador_sistema = controlador_sistema
         self.__lista_de_compras_dao = ListaDeComprasDAO()
         self.__insumo = Insumo
         self.__tela_lista_de_compras = TelaListaDeCompras()

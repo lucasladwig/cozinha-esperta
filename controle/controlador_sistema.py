@@ -1,24 +1,40 @@
-from controle.controlador import Controlador
 from controle.controlador_insumo import ControladorInsumo
 from controle.controlador_estoque_insumo import ControladorEstoqueInsumo
-from controle.controlador_receita import ControladorReceita
+from controle.controlador_receitas import ControladorReceitas
 from controle.controlador_custos_fixos import ControladorCustosFixos
+from controle.controlador_producao import ControladorProducao
+from controle.controlador_lista_de_compras import ControladorListaDeCompras
+
+
 from limite.tela_sistema import TelaSistema
 
 
-class ControladorSistema(Controlador):
+class ControladorSistema():
     """Controlador do sistema, gerencia o acesso a todos os módulos do sistema."""
 
+    __MODULOS = [
+        ["Insumos", "Gerencie os tipos de insumos com os quais sua cozinha trabalha.", ],
+        ["Estoque", "Gerencie estoque e custos dos seus insumos.", ],
+        ["Receitas", "Gerencie suas receitas e fichas técnicas.", ],
+        ["Produções", "Planeje suas produções.", ],
+        ["Lista de Compras", "Gere uma lista de compras com base em uma produção.", ],
+        ["Relatórios de Custos", "Veja um relatório de custos de um período.", ],
+        ["Custos Fixos", "Insira os custos fixos da sua cozinha para calcular de custos de seus pratos.", ],
+        ["Etiquetagem", "Gere um arquivo de texto com as informações essenciais para uma etiqueta.", ],
+    ]
+
     def __init__(self) -> None:
-        super().__init__(tela=TelaSistema(), controlador_sistema=None)
-        self.__controlador_insumo = ControladorInsumo()
-        self.__controlador_estoque_insumo = ControladorEstoqueInsumo()
-        self.__controlador_receita = ControladorReceita()
-        # self.__controlador_producoes = ControladorProducoes()
-        # self.__controlador_lista_compras = ControladorListaCompras()
-        # self.__controlador_relatorios_custos = ControladorRelatoriosCustos()
+        self.__controlador_insumo = ControladorInsumo(self)
+        self.__controlador_estoque_insumo = ControladorEstoqueInsumo(self)
+        self.__controlador_receitas = ControladorReceitas(self)
+        self.__controlador_producao = ControladorProducao(self)
+        self.__controlador_lista_compras = ControladorListaDeCompras(self)
         self.__controlador_custos_fixos = ControladorCustosFixos(self)
-        # self.__controlador_etiquetas = ControladorEtiquetas()
+        # self.__controlador_filtar_receitas = ControladorFiltrarReceitas(self)
+        # self.__controlador_relatorios_custos = ControladorRelatoriosCustos(self)
+        # self.__controlador_etiquetas = ControladorEtiquetas(self)
+
+        self.__tela_sistema = TelaSistema(ControladorSistema.__MODULOS)
 
     @property
     def controlador_insumo(self):
@@ -29,24 +45,24 @@ class ControladorSistema(Controlador):
         return self.__controlador_estoque_insumo
 
     @property
-    def controlador_receita(self):
-       return self.__controlador_receita
+    def controlador_receitas(self):
+        return self.__controlador_receitas
 
-    # @property
-    # def controlador_producoes(self):
-    #    return self.__controlador_producoes
+    @property
+    def controlador_producao(self):
+        return self.__controlador_producao
 
-    # @property
-    # def controlador_lista_compras(self):
-    #    return self.__controlador_lista_compras
-
-    # @property
-    # def controlador_relatorios_custos(self):
-    #    return self.__controlador_relatorios_custos
+    @property
+    def controlador_lista_compras(self):
+        return self.__controlador_lista_compras
 
     @property
     def controlador_custos_fixos(self):
         return self.__controlador_custos_fixos
+
+    # @property
+    # def controlador_relatorios_custos(self):
+    #    return self.__controlador_relatorios_custos
 
     # @property
     # def controlador_etiquetas(self):
@@ -54,14 +70,15 @@ class ControladorSistema(Controlador):
 
     def abrir_tela(self):
         modulos = {
-            "Insumos": self.controlador_insumos.abrir_tela,
-            "Estoque": self.controlador_estoque_insumo.abrir_tela,
-            "Receitas": self.controlador_receitas.abrir_tela,
-            "Producoes": self.controlador_producoes.abrir_tela,
-            "Lista de Compras": self.controlador_lista_compras.abrir_tela,
-            "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
+            "Insumos": self.controlador_insumo.abre_tela,
+            "Estoque": self.controlador_estoque_insumo.abre_tela,
+            "Receitas": self.controlador_receitas.abrir_tela_gerenciador,
+            "Producoes": self.controlador_producao.abre_tela,
+            "Lista de Compras": self.controlador_lista_compras.abre_tela,
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
-            "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
+            # "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
+            # "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
+            # "Filtrar Receitas": self.controlador_etiqueteas.abrir_tela,
             "Voltar": self.voltar
         }
 

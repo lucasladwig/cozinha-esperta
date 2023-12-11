@@ -6,7 +6,8 @@ from persistencia.custos_fixos_dao import CustosFixosDAO
 class ControladorCustosFixos():
     """Controlador de custos fixos."""
 
-    def __init__(self) -> None:
+    def __init__(self, controlador_sistema) -> None:
+        self.__controlador_sistema = controlador_sistema
         self.__tela = TelaCustosFixos()
         self.__dao = CustosFixosDAO()
         self.__controlador_sistema = None

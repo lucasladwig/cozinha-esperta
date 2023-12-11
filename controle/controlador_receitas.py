@@ -9,7 +9,7 @@ from limite.tela_cadastro_receita import TelaCadastroReceita
 from limite.tela_cadastro_item_de_receita import TelaCadastroItemDeReceita
 
 
-class ControladorReceita:
+class ControladorReceitas:
     """Controlador de Receitas e Itens de Receita."""
 
     # Constantes de classe
@@ -36,8 +36,8 @@ class ControladorReceita:
         "indice_coccao": 1.0,
     }
 
-    def __init__(self) -> None:
-        # self.__controlador_sistema = None
+    def __init__(self, controlador_sistema) -> None:
+        self.__controlador_sistema = controlador_sistema
         self.__controlador_insumos = ControladorInsumo()
         self.__controlador_custos_fixos = ControladorCustosFixos()
         self.__receita_dao = ReceitaDAO()
@@ -99,7 +99,7 @@ class ControladorReceita:
 
         # Abre uma tela de cadastro/edição de receita com os dados passados
         if receita is None:
-            dados_receita_atual = ControladorReceita.__DADOS_NOVA_RECEITA
+            dados_receita_atual = ControladorReceitas.__DADOS_NOVA_RECEITA
             itens_da_receita = []
             dados_itens_receita_atual = []
         else:
@@ -117,7 +117,7 @@ class ControladorReceita:
             if evento_receita == "Adicionar Item...":
                 valores_item_novo = self.__tela_cadastro_item_receita.abrir_tela(
                     lista_insumos=self.__insumos_cadastrados,
-                    dados_item=ControladorReceita.__DADOS_NOVO_ITEM_RECEITA
+                    dados_item=ControladorReceitas.__DADOS_NOVO_ITEM_RECEITA
                 )
                 if valores_item_novo is None:
                     self.__tela_cadastro_item_receita.fechar_tela()
@@ -198,7 +198,7 @@ class ControladorReceita:
                 # Salvar nova Receita
                 if evento_receita == "Salvar":
                     if valores_receita is None:
-                        dados_receita_atual = ControladorReceita.__DADOS_NOVA_RECEITA
+                        dados_receita_atual = ControladorReceitas.__DADOS_NOVA_RECEITA
                         itens_da_receita = []
                         dados_itens_receita_atual = []
 
@@ -367,7 +367,7 @@ class ControladorReceita:
     def __listar_dados_uma_receita(self, receita: Receita) -> dict:
         """Retorna todos os atributos de uma receita para serem exibidos em tela."""
         if receita is None:
-            dados_receita = ControladorReceita.__DADOS_NOVA_RECEITA
+            dados_receita = ControladorReceitas.__DADOS_NOVA_RECEITA
         else:
             dados_receita = {
                 "codigo": receita.codigo,
@@ -398,7 +398,7 @@ class ControladorReceita:
     def __listar_dados_um_item_receita(self, item_receita: ItemDeReceita) -> dict:
         """Retorna os atributos editáveis de um item de receita para serem exibidos em tela."""
         if item_receita is None:
-            dados_item_receita = ControladorReceita.__DADOS_NOVO_ITEM_RECEITA
+            dados_item_receita = ControladorReceitas.__DADOS_NOVO_ITEM_RECEITA
         else:
             dados_item_receita = {
                 "nome_insumo": item_receita.insumo.nome,
