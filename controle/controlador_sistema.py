@@ -4,6 +4,7 @@ from controle.controlador_receitas import ControladorReceitas
 from controle.controlador_custos_fixos import ControladorCustosFixos
 from controle.controlador_producao import ControladorProducao
 from controle.controlador_lista_de_compras import ControladorListaDeCompras
+from controle.controlador_etiqueta import ControladorEtiqueta
 from controle.controlador_relatorio_de_custos import ControladorRelatorioDeCustos
 
 
@@ -31,6 +32,7 @@ class ControladorSistema():
         self.__controlador_producao = ControladorProducao(self)
         self.__controlador_lista_compras = ControladorListaDeCompras(self)
         self.__controlador_custos_fixos = ControladorCustosFixos(self)
+        self.__controlador_etiqueta = ControladorEtiqueta(self)
         # self.__controlador_filtar_receitas = ControladorFiltrarReceitas(self)
         self.__controlador_relatorio_de_custos = ControladorRelatorioDeCustos(self)
         # self.__controlador_etiquetas = ControladorEtiquetas(self)
@@ -77,6 +79,8 @@ class ControladorSistema():
             "Producoes": self.controlador_producao.abre_tela,
             "Lista de Compras": self.controlador_lista_compras.abre_tela,
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
+            "Etiquetas": self.__controlador_etiqueta.abre_tela,
+            # "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
             "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
             # "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
             # "Filtrar Receitas": self.controlador_etiqueteas.abrir_tela,
