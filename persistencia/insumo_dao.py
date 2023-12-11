@@ -4,7 +4,7 @@ from entidade.insumo import Insumo
 
 class InsumoDAO(DAO):
     def __init__(self):
-        super().__init__('insumo.pkl')
+        super().__init__('dados/insumo.pkl')
 
     def add(self, insumo: Insumo):
         if isinstance(insumo, Insumo) and isinstance(insumo.nome, str):
