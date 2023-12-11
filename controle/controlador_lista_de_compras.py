@@ -110,6 +110,6 @@ class ControladorListaDeCompras:
                     self.excluir_na_lista_de_compras(valores["nome"])
             elif botao == "Voltar":
                 self.__tela_lista_de_compras.close()
-                # self.voltar()
+                break
             self.__tela_lista_de_compras.close()
             self.__tela_lista_de_compras.init_components()

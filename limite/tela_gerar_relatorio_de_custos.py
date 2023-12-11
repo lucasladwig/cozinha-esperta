@@ -21,7 +21,7 @@ class TelaGerarRelatorioDeCustos:
         if botao == "Visualizar":
             return botao, valores
         elif botao == "Cancelar":
-            return None
+            return botao, valores
 
     def close(self):
         self.__window.close()
