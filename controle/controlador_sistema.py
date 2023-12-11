@@ -1,6 +1,7 @@
 from controle.controlador_insumo import ControladorInsumo
 from controle.controlador_estoque_insumo import ControladorEstoqueInsumo
 from controle.controlador_receitas import ControladorReceitas
+from controle.controlador_filtro_receitas import ControladorFiltroReceitas
 from controle.controlador_custos_fixos import ControladorCustosFixos
 from controle.controlador_producao import ControladorProducao
 from controle.controlador_lista_de_compras import ControladorListaDeCompras
@@ -23,6 +24,7 @@ class ControladorSistema():
         ["Relatórios de Custos", "Veja um relatório de custos de um período.", ],
         ["Custos Fixos", "Insira os custos fixos da sua cozinha para calcular de custos de seus pratos.", ],
         ["Etiquetagem", "Gere um arquivo de texto com as informações essenciais para uma etiqueta.", ],
+        ["Filtrar Receitas", "Filtre receitas cadastradas a partir de custo, calorias ou estoque.", ],
     ]
 
     def __init__(self) -> None:
@@ -32,10 +34,9 @@ class ControladorSistema():
         self.__controlador_producao = ControladorProducao(self)
         self.__controlador_lista_compras = ControladorListaDeCompras(self)
         self.__controlador_custos_fixos = ControladorCustosFixos(self)
+        self.__controlador_filtro_receitas = ControladorFiltroReceitas(self)
         self.__controlador_etiqueta = ControladorEtiqueta(self)
-        # self.__controlador_filtar_receitas = ControladorFiltrarReceitas(self)
         self.__controlador_relatorio_de_custos = ControladorRelatorioDeCustos(self)
-        # self.__controlador_etiquetas = ControladorEtiquetas(self)
 
         self.__tela_sistema = TelaSistema()
 
@@ -50,6 +51,10 @@ class ControladorSistema():
     @property
     def controlador_receitas(self):
         return self.__controlador_receitas
+
+    @property
+    def controlador_filtro_receitas(self):
+        return self.__controlador_filtro_receitas
 
     @property
     def controlador_producao(self):
@@ -80,10 +85,8 @@ class ControladorSistema():
             "Lista de Compras": self.controlador_lista_compras.abre_tela,
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
             "Etiquetas": self.__controlador_etiqueta.abre_tela,
-            # "Relatorios de Custos": self.controlador_relatorios_custos.abrir_tela,
             "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
-            # "Etiquetagem": self.controlador_etiqueteas.abrir_tela,
-            # "Filtrar Receitas": self.controlador_etiqueteas.abrir_tela,
+            "Filtrar Receitas": self.controlador_filtro_receitas.abrir_tela,
             "Sair": self.sair
         }
 

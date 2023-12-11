@@ -14,6 +14,10 @@ class ControladorEstoqueInsumo:
         self.__tela_atualiza_estoque_insumo = TelaAtualizaEstoqueInsumo()
         self.__tela_mensagem = TelaMensagem()
 
+    @property
+    def insumo_dao(self) -> InsumoDAO:
+        return self.__insumo_dao
+
     def edita_insumo(self, valores, nome):
         self.__tela_estoque_insumo.close()
         self.__tela_atualiza_estoque_insumo.close()
