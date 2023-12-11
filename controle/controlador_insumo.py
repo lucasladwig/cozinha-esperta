@@ -113,6 +113,7 @@ class ControladorInsumo:
                     self.exclui_insumo(valores["nome"])
             elif botao == "Voltar":
                 self.__tela_insumo.close()
+                return
                 # self.voltar()
             self.__tela_insumo.close()
             self.__tela_insumo.init_components()

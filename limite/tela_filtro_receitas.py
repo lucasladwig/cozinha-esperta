@@ -66,11 +66,12 @@ class TelaFiltroReceitas:
             [sg.Radio("Por estoque suficiente para",
                       "tipo_filtro",
                       key="filtro_estoque",
-                      tooltip="Filtrar receitas por valor calórico"),
+                      tooltip="Filtrar receitas por estoque"),
              sg.Input(key="num_porcoes",
                       default_text="20",
                       size=5,
-                      tooltip="Valor calórico mínimo por porção"),
+                      tooltip="Número de porções a produzir"),
+             sg.Text("porções"),
              ],
             [sg.Push(), sg.Button("Limpar Filtros"), sg.Button("Filtrar Receitas")]
         ]

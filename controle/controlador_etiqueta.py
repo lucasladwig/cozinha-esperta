@@ -8,12 +8,12 @@ from persistencia.producao_dao import ProducaoDAO
 
 class ControladorEtiqueta:
     # def __init__(self, controlador_sistema) -> None:
-    def __init__(self) -> None:
+    def __init__(self, controlador_sistema) -> None:
         self.__producao_dao = ProducaoDAO()
         self.__tela_etiqueta = TelaEtiqueta()
         self.__tela_gera_etiqueta = TelaGeraEtiqueta()
         self.__tela_mensagem = TelaMensagem()
-        # self.__controlador_sistema = controlador_sistema
+        self.__controlador_sistema = controlador_sistema
 
     def cria_etiqueta(self, valores, id):
         producao = self.busca_producao_por_id(id)

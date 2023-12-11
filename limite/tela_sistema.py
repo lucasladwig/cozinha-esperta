@@ -28,7 +28,7 @@ class TelaSistema:
         ]
 
         layout = [
-            [sg.Text("Seja bem-vindo ao Cozinha Esperta! Escolha o módulo deejado no menu abaixo:")],
+            [sg.Text("Seja bem-vindo ao Cozinha Esperta! Escolha o módulo desejado no menu abaixo:")],
             [sg.Frame("Módulos", frame, expand_x=True)],
             [sg.Push(), sg.Button("Encerrar")]
         ]

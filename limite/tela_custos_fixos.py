@@ -65,12 +65,13 @@ class TelaCustosFixos:
         layout = [
             [sg.Text("Insira uma estimativa do custo mensal (R$) com os itens abaixo:")],
             [sg.Frame("Custos Fixos:", frame_custos)],
-            [sg.Text("Produção mensal total (porções):"),
+            [sg.Text("Produção mensal estimada (em número porções):"),
              sg.Input(key="producao_mensal",
                       size=14,
                       default_text=f"{custos_atuais.porcoes_produzidas_mes}",
                       tooltip="A soma mensal de todas as porções produzidas de todos os pratos."),
-             sg.Button("Pegar do Último Mês", disabled=True)],
+             # sg.Button("Pegar do Último Mês", disabled=True)
+             ],
             [sg.Text(
                 f"Contribuição dos custos fixos em cada porção: R${custos_atuais.custo_fixo_por_porcao:.2f}")],
             [sg.Push(), sg.Button("Sair"), sg.Button("Atualizar e Salvar")]

@@ -23,7 +23,7 @@ class ControladorSistema():
         ["Lista de Compras", "Gere uma lista de compras com base em uma produção.", ],
         ["Relatórios de Custos", "Veja um relatório de custos de um período.", ],
         ["Custos Fixos", "Insira os custos fixos da sua cozinha para calcular de custos de seus pratos.", ],
-        ["Etiquetagem", "Gere um arquivo de texto com as informações essenciais para uma etiqueta.", ],
+        ["Etiquetas", "Gere um arquivo de texto com as informações essenciais para uma etiqueta.", ],
         ["Filtrar Receitas", "Filtre receitas cadastradas a partir de custo, calorias ou estoque.", ],
     ]
 
@@ -72,9 +72,9 @@ class ControladorSistema():
     def controlador_relatorio_de_custos(self):
        return self.__controlador_relatorio_de_custos
 
-    # @property
-    # def controlador_etiquetas(self):
-    #    return self.__controlador_etiquetas
+    @property
+    def controlador_etiquetas(self):
+       return self.__controlador_etiquetas
 
     def abrir_tela(self):
         modulos = {
@@ -83,9 +83,9 @@ class ControladorSistema():
             "Receitas": self.controlador_receitas.abrir_tela_gerenciador,
             "Producoes": self.controlador_producao.abre_tela,
             "Lista de Compras": self.controlador_lista_compras.abre_tela,
+            "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
             "Etiquetas": self.__controlador_etiqueta.abre_tela,
-            "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
             "Filtrar Receitas": self.controlador_filtro_receitas.abrir_tela,
             "Sair": self.sair
         }

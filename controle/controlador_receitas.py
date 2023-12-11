@@ -58,7 +58,7 @@ class ControladorReceitas:
         """Abre a tela inicial do gerenciador de receitas."""
         while True:
             acao_gerenciador, dados_gerenciador = self.__tela_gerenciador_receitas.abrir_tela(
-                self.__listar_dados_todas_receitas())
+                self.listar_dados_todas_receitas())
             self.__tela_gerenciador_receitas.fechar_tela()
 
             # NOVA RECEITA
@@ -208,7 +208,8 @@ class ControladorReceitas:
                         self.__tela_cadastro_receita.fechar_tela()
                         continue
 
-                    elif self.buscar_receita_por_codigo(valores_receita['codigo']) is not None:
+                    elif (self.buscar_receita_por_codigo(valores_receita['codigo']) is not None
+                            and dados_receita_atual['codigo'] != valores_receita['codigo']):
                         self.__tela_cadastro_receita.mostrar_mensagem(
                             "Código de receita já existe!", titulo="Erro")
                         self.__tela_cadastro_receita.fechar_tela()
@@ -290,6 +291,7 @@ class ControladorReceitas:
                 return
 
         # Atualiza parâmetros
+        # receita_a_editar.codigo = dados_receita["codigo"]
         receita_a_editar.descricao = dados_receita["descricao"]
         receita_a_editar.rendimento_porcoes = dados_receita["rendimento_porcoes"]
         receita_a_editar.tempo_preparo = dados_receita["tempo_preparo"]
