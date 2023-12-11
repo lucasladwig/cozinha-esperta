@@ -2,7 +2,6 @@ from entidade.item_de_receita import ItemDeReceita
 from entidade.receita import Receita
 from entidade.insumo import Insumo
 from persistencia.receita_dao import ReceitaDAO
-# from controle.controlador_sistema import ControladorSistema
 from controle.controlador_insumo import ControladorInsumo
 from controle.controlador_custos_fixos import ControladorCustosFixos
 from limite.tela_gerenciador_receitas import TelaGerenciadorReceitas
@@ -50,6 +49,9 @@ class ControladorReceitas:
         self.__insumos_cadastrados = self.__listar_insumos()
 
     # GETTERS/SETTERS
+    @property
+    def receita_dao(self) -> ReceitaDAO:
+        return self.__receita_dao
 
     # TELAS
     def abrir_tela_gerenciador(self) -> None:
@@ -69,7 +71,7 @@ class ControladorReceitas:
                     self.__tela_gerenciador_receitas.mostrar_mensagem(
                         "Nenhuma receita selecionada!", titulo="Erro")
                 else:
-                    receita_atual = self.__buscar_receita_por_codigo(
+                    receita_atual = self.buscar_receita_por_codigo(
                         dados_gerenciador["codigo"])
 
                     self.abrir_tela_receita(receita_atual)
@@ -206,7 +208,7 @@ class ControladorReceitas:
                         self.__tela_cadastro_receita.fechar_tela()
                         continue
 
-                    elif self.__buscar_receita_por_codigo(valores_receita['codigo']) is not None:
+                    elif self.buscar_receita_por_codigo(valores_receita['codigo']) is not None:
                         self.__tela_cadastro_receita.mostrar_mensagem(
                             "Código de receita já existe!", titulo="Erro")
                         self.__tela_cadastro_receita.fechar_tela()
@@ -244,7 +246,7 @@ class ControladorReceitas:
         # Testa se código inserido já existe
         novo_codigo = dados_receita["codigo"]
 
-        if self.__buscar_receita_por_codigo(novo_codigo) is not None:
+        if self.buscar_receita_por_codigo(novo_codigo) is not None:
             self.__tela_cadastro_receita.mostrar_mensagem(
                 "Receita com este código já existe!", titulo="Erro")
 
@@ -299,7 +301,7 @@ class ControladorReceitas:
         self.__receita_dao.add(receita_a_editar)
 
     def excluir_receita(self, codigo: str) -> None:
-        if self.__buscar_receita_por_codigo(codigo) is None:
+        if self.buscar_receita_por_codigo(codigo) is None:
             raise ValueError("Receita não existe!")
         self.__receita_dao.remove(codigo)
 
@@ -346,7 +348,7 @@ class ControladorReceitas:
 
     # MÉTODOS DE BUSCA
 
-    def __buscar_receita_por_codigo(self, codigo: str) -> Receita:
+    def buscar_receita_por_codigo(self, codigo: str) -> Receita:
         if isinstance(codigo, str):
             for receita in self.__receita_dao.get_all():
                 if receita.codigo == codigo:
@@ -385,7 +387,7 @@ class ControladorReceitas:
             }
         return dados_receita
 
-    def __listar_dados_todas_receitas(self) -> list:
+    def listar_dados_todas_receitas(self) -> list:
         """Retorna código, nome e descrição de uma receita para serem exibidos em tela (em formato de tabela)."""
         receitas = []
         for receita in self.__receita_dao.get_all():
