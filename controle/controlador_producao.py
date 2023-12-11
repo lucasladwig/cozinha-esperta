@@ -18,6 +18,14 @@ class ControladorProducao:
         self.__tela_edita_producao = TelaEditaProducao()
         self.__tela_mensagem = TelaMensagem()
 
+    @property
+    def controlador_sistema(self):
+        return self.__controlador_sistema
+
+    @property
+    def producao_dao(self):
+        return self.__producao_dao
+
     def edita_producao(self, valores, id):
         # self.__tela_estoque_insumo.close()
         # self.__tela_atualiza_estoque_insumo.close()
@@ -51,10 +59,10 @@ class ControladorProducao:
             except ValueError:
                 return self.__tela_mensagem.open("Erro na Data")
 
-        if data_formatada < datetime.now().date():
+        if data_formatada.date() < datetime.now().date():
             return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
 
-        if data_formatada != producao.data_producao:
+        if data_formatada.date() != producao.data_producao:
             producao.data_producao = data_formatada.date()
 
         self.__producao_dao.add(producao=producao)
@@ -81,7 +89,7 @@ class ControladorProducao:
             return self.__tela_mensagem.open("Erro na Data")
 
         producao = Producao(receita=potencial_producao["it_receita"],
-                            custo_total_producao=potencial_producao["it_receita"]["custo_porcao"],
+                            custo_total_producao=potencial_producao["it_receita"].custo_porcao,
                             numero_porcoes=quantidade_porcoes,
                             data_producao=data_formatada.date(),
                             status=False)
@@ -100,19 +108,19 @@ class ControladorProducao:
     def lista_dados_producao(self, id: str):
         lista_objeto_producao = []
         producao = self.busca_producao_por_id(id)
-        lista_objeto_producao.append(producao.receita["nome"].title())
+        lista_objeto_producao.append(producao.receita.nome.title())
         lista_objeto_producao.append(producao.numero_porcoes)
         lista_objeto_producao.append(producao.data_producao)
         return lista_objeto_producao
 
     def __monta_lista(self):
         lista_producao = []
-        producoes = self.__producao_dao.get_all()
+        producoes = self.producao_dao.get_all()
         try:
             for values in producoes:
                 lista_auxiliar = []
                 lista_auxiliar.append(values.id)
-                lista_auxiliar.append(values.receita['nome'])
+                lista_auxiliar.append(values.receita.nome)
                 lista_auxiliar.append(values.custo_total_producao)
                 lista_auxiliar.append(datetime.strftime(
                     values.data_producao, "%Y-%m-%d"))
@@ -142,7 +150,10 @@ class ControladorProducao:
             self.__tela_producao.close()
 
             if botao == "Nova Produção":
-                receitas = Receitas
+                # receitas = Receitas
+                receitas = list(
+                    self.__controlador_sistema.controlador_receitas.receita_dao.get_all())
+
                 informacoes = self.__tela_insere_producao.open(
                     lista=None, receitas=receitas)
                 if informacoes:

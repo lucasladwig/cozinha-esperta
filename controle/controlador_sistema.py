@@ -24,7 +24,8 @@ class ControladorSistema():
         ["Relatórios de Custos", "Veja um relatório de custos de um período.", ],
         ["Custos Fixos", "Insira os custos fixos da sua cozinha para calcular de custos de seus pratos.", ],
         ["Etiquetas", "Gere um arquivo de texto com as informações essenciais para uma etiqueta.", ],
-        ["Filtrar Receitas", "Filtre receitas cadastradas a partir de custo, calorias ou estoque.", ],
+        ["Filtrar Receitas",
+            "Filtre receitas cadastradas a partir de custo, calorias ou estoque.", ],
     ]
 
     def __init__(self) -> None:
@@ -36,7 +37,8 @@ class ControladorSistema():
         self.__controlador_custos_fixos = ControladorCustosFixos(self)
         self.__controlador_filtro_receitas = ControladorFiltroReceitas(self)
         self.__controlador_etiqueta = ControladorEtiqueta(self)
-        self.__controlador_relatorio_de_custos = ControladorRelatorioDeCustos(self)
+        self.__controlador_relatorio_de_custos = ControladorRelatorioDeCustos(
+            self)
 
         self.__tela_sistema = TelaSistema()
 
@@ -70,18 +72,18 @@ class ControladorSistema():
 
     @property
     def controlador_relatorio_de_custos(self):
-       return self.__controlador_relatorio_de_custos
+        return self.__controlador_relatorio_de_custos
 
     @property
     def controlador_etiquetas(self):
-       return self.__controlador_etiquetas
+        return self.__controlador_etiquetas
 
     def abrir_tela(self):
         modulos = {
             "Insumos": self.controlador_insumo.abre_tela,
             "Estoque": self.controlador_estoque_insumo.abre_tela,
             "Receitas": self.controlador_receitas.abrir_tela_gerenciador,
-            "Producoes": self.controlador_producao.abre_tela,
+            "Produções": self.controlador_producao.abre_tela,
             "Lista de Compras": self.controlador_lista_compras.abre_tela,
             "Relatórios de Custos": self.controlador_relatorio_de_custos.abrir_tela,
             "Custos Fixos": self.controlador_custos_fixos.abrir_tela,
@@ -91,7 +93,8 @@ class ControladorSistema():
         }
 
         while True:
-            modulo_escolhido = self.__tela_sistema.abrir_tela(ControladorSistema.__MODULOS)
+            modulo_escolhido = self.__tela_sistema.abrir_tela(
+                ControladorSistema.__MODULOS)
             modulos[modulo_escolhido]()
 
     def inicializar_sistema(self):

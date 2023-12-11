@@ -9,7 +9,7 @@ class TelaInsereProducao:
 
     def init_components(self, lista, receitas):
         if receitas:  # condicional necessaria para primeira inicialização da tela
-            receitas = receitas = [receita.get("nome") for receita in receitas]
+            receitas = [receita.nome for receita in receitas]
 
         layout = [
             [sg.Text(f"Receita a Produzir:"), sg.Combo(
@@ -33,7 +33,7 @@ class TelaInsereProducao:
         botao, valores = self.__window.read()
         if botao == "Salvar":
             receita_escolhida = [
-                receita for receita in receitas if receita["nome"] == valores["it_receita"]]
+                receita for receita in receitas if receita.nome == valores["it_receita"]]
             if not receita_escolhida:
                 return None
             valores["it_receita"] = receita_escolhida[0]
