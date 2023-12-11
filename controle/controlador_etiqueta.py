@@ -2,25 +2,23 @@ from datetime import datetime, timedelta
 
 from limite.tela_mensagem import TelaMensagem
 from limite.tela_etiqueta import TelaEtiqueta
+from limite.tela_gera_etiqueta import TelaGeraEtiqueta
 from persistencia.producao_dao import ProducaoDAO
-from dados.receitas_dict import Receitas
 
 
 class ControladorEtiqueta:
     # def __init__(self, controlador_sistema) -> None:
     def __init__(self) -> None:
-        # self.__controlador_sistema = controlador_sistema
         self.__producao_dao = ProducaoDAO()
         self.__tela_etiqueta = TelaEtiqueta()
+        self.__tela_gera_etiqueta = TelaGeraEtiqueta()
         self.__tela_mensagem = TelaMensagem()
+        # self.__controlador_sistema = controlador_sistema
 
     def cria_etiqueta(self, valores, id):
         producao = self.busca_producao_por_id(id)
         if valores == None:
             return self.__tela_mensagem.open("Nenhuma Produção Selecionada!")
-
-        if producao.status == True:
-            return self.__tela_mensagem.open("Você não pode alterar uma produção que já foi feita!")
 
         try:
             data_producao = (valores["it_data_validade"])
@@ -34,9 +32,10 @@ class ControladorEtiqueta:
             except ValueError:
                 return self.__tela_mensagem.open("Erro na Data")
 
-        if data_formatada < datetime.now().date():
-            return self.__tela_mensagem.open("A data de produção não pode ser anterior a hoje!")
-        etiqueta = f"{producao.receita['nome']}\n Fabricação: {datetime.strftime(producao.data_producao, '%Y-%m-%d')}\n Validade: {datetime.strftime(data_formatada, '%Y-%m-%d')}"
+        if data_formatada.date() < producao.data_producao:
+            return self.__tela_mensagem.open("A data da Validade não pode ser menor que a data de produção")
+
+        etiqueta = f"{producao.receita['nome']}\n Fabricacao: {datetime.strftime(producao.data_producao, '%Y-%m-%d')}\n Validade: {datetime.strftime(data_formatada, '%Y-%m-%d')}\n Calorias: {producao.receita['calorias_porcao']}"
         self.__salva_etiqueta(etiqueta, producao.receita["nome"], producao.id)
         self.__tela_mensagem.open("Criação de etiqueta Concluida!")
 
@@ -80,7 +79,7 @@ class ControladorEtiqueta:
         # texto
         dados = etiqueta
         # nome do arquivo
-        nome_arquivo = f"{nome}_{id_producao}.txt"
+        nome_arquivo = f"{nome}_{id_producao}_{datetime.strftime(datetime.now(),'%H_%M_%S')}.txt"
         # diretorio
         diretorio = 'etiquetas'
         # caminho completo
@@ -102,31 +101,13 @@ class ControladorEtiqueta:
                         "Não foi selecionado nenhuma linha!")
                 else:
                     producao = self.lista_dados_producao(valores["id"])
-                    informacoes = self.__tela_edita_producao.open(producao)
+                    informacoes = self.__tela_gera_etiqueta.open(producao)
                     self.cria_etiqueta(informacoes, valores["id"])
-                    self.__tela_edita_producao.close()
-
-            elif botao == "Produzir":
-                if valores["id"] == None:
-                    self.__tela_mensagem.open(
-                        "Não foi selecionado nenhuma linha!")
-                else:
-                    producao = self.__produz(valores["id"])
-                    self.__producao_dao.add(producao)
-
-            elif botao == "Excluir Produção":
-                if valores["id"] == None:
-                    self.__tela_mensagem.open(
-                        "Não foi selecionado nenhuma linha!")
-                else:
-                    self.__producao_dao.remove(valores["id"])
-                    self.__tela_mensagem.open(
-                        "Remoção Concluida!")
-                    # metodo para liberar os intens
+                    self.__tela_gera_etiqueta.close()
 
             elif botao == "Voltar":
                 self.__tela_etiqueta.close()
                 break
 
-        self.__tela_producao.close()
-        self.__tela_producao.init_components()
+        self.__tela_etiqueta.close()
+        self.__tela_etiqueta.init_components()
